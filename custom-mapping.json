@@ -1,0 +1,51 @@
+{
+  "components": {
+    "Button": {
+      "meta": {
+        "variants": {
+          "props": {
+            "status": {
+              "danger": {
+                "backgroundColor": "#ff6347",
+                "borderColor": "#ff6347"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Text": {
+      "meta": {},
+      "appearances": {
+        "default": {
+          "mapping": {
+            "fontFamily": "Roboto"
+          },
+          "variantGroups": {
+            "category": {
+              "h1": {
+                "appearance": {
+                  "default": {
+                    "fontFamily": "Roboto",
+                    "fontWeight": "400"
+                  }
+                }
+              },
+              "h2": {
+                "appearance": {
+                  "default": {
+                    "fontFamily": "Roboto",
+                    "fontWeight": "400" 
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "strict": {
+    "text-font-family": "Roboto"
+  }
+}
