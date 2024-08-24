@@ -1,13 +1,36 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Linking, Alert, View } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { Layout, Text, Card, Select, SelectItem, Button, IndexPath, Icon, Input, Divider } from '@ui-kitten/components';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTranslation } from 'react-i18next'; 
-import { updateUserEmailAsync, updateUserPasswordAsync, createCheckoutSession, checkSubscriptionStatus } from '../redux/actions';
+import React, {useEffect, useState, useRef} from 'react';
+import {
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  View,
+} from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+  Layout,
+  Text,
+  Card,
+  Select,
+  SelectItem,
+  Button,
+  IndexPath,
+  Icon,
+  Input,
+  Divider,
+} from '@ui-kitten/components';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useTranslation} from 'react-i18next';
+import {
+  updateUserEmailAsync,
+  updateUserPasswordAsync,
+  createCheckoutSession,
+  checkSubscriptionStatus,
+} from '../redux/actions';
 
-const ProfileScreen = ({ navigation }) => {
-  const { t } = useTranslation(); 
+const ProfileScreen = ({navigation}) => {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
   const theme = useSelector(state => state.theme);
@@ -42,9 +65,9 @@ const ProfileScreen = ({ navigation }) => {
   }, [dispatch]);
 
   const handleSubscriptionManage = () => {
-    Linking.openURL('https://billing.stripe.com/p/login/14kbKMcqc6DX000bII').catch(err =>
-      console.error("Couldn't load page", err)
-    );
+    Linking.openURL(
+      'https://billing.stripe.com/p/login/14kbKMcqc6DX000bII',
+    ).catch(err => console.error("Couldn't load page", err));
   };
 
   const handleUpdateEmail = () => {
@@ -57,111 +80,163 @@ const ProfileScreen = ({ navigation }) => {
     Alert.alert(t('passwordUpdated'), t('passwordUpdateSuccess'));
   };
 
-  const handlePayment = async (priceId) => {
+  const handlePayment = async priceId => {
     try {
       const paymentUrl = await dispatch(createCheckoutSession(priceId));
       if (paymentUrl) {
-        Linking.openURL(paymentUrl).catch(err => console.error("Couldn't load page", err));
+        Linking.openURL(paymentUrl).catch(err =>
+          console.error("Couldn't load page", err),
+        );
       }
     } catch (error) {
-      console.error("Error during payment process:", error);
+      console.error('Error during payment process:', error);
     }
   };
 
-  const subscriptionStatusText = user.subscriptionStatus === 'active' ? t('inGoodStanding') : t('expired');
-  const subscriptionStatusColor = user.subscriptionStatus === 'active' ? 'success' : 'danger';
+  const subscriptionStatusText =
+    user.subscriptionStatus === 'active' ? t('inGoodStanding') : t('expired');
+  const subscriptionStatusColor =
+    user.subscriptionStatus === 'active' ? 'success' : 'danger';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor }}>
-      <Layout style={[styles.container, { backgroundColor }]}>
-        <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollContainer}>
-          <Text category='h1' style={[styles.header, { color: textColor }]}>{t('profile')}</Text>
+    <SafeAreaView style={{flex: 1, backgroundColor}}>
+      <Layout style={[styles.container, {backgroundColor}]}>
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.scrollContainer}>
+          <Text category="h1" style={[styles.header, {color: textColor}]}>
+            {t('profile')}
+          </Text>
 
           {/* User Information */}
-          <Card style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-            <Text category='h5' style={[styles.cardHeader, { color: textColor }]}>{t('userInfo')}</Text>
+          <Card style={[styles.card, {backgroundColor: cardBackgroundColor}]}>
+            <Text category="h5" style={[styles.cardHeader, {color: textColor}]}>
+              {t('userInfo')}
+            </Text>
             <Divider style={styles.divider} />
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: textColor }]}>{t('name')}:</Text>
-              <Text style={[styles.detailText, { color: textColor }]}>{user.name}</Text>
+              <Text style={[styles.label, {color: textColor}]}>
+                {t('name')}:
+              </Text>
+              <Text style={[styles.detailText, {color: textColor}]}>
+                {user.name}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: textColor }]}>{t('phone')}:</Text>
-              <Text style={[styles.detailText, { color: textColor }]}>{user.phone}</Text>
+              <Text style={[styles.label, {color: textColor}]}>
+                {t('phone')}:
+              </Text>
+              <Text style={[styles.detailText, {color: textColor}]}>
+                {user.phone}
+              </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: textColor }]}>{t('email')}:</Text>
-              <Text style={[styles.detailText, { color: textColor }]}>{user.email}</Text>
+              <Text style={[styles.label, {color: textColor}]}>
+                {t('email')}:
+              </Text>
+              <Text style={[styles.detailText, {color: textColor}]}>
+                {user.email}
+              </Text>
             </View>
           </Card>
 
           {/* Just Eat Status */}
-          <Card style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-            <Text category='h5' style={[styles.cardHeader, { color: textColor }]}>{t('justEatStatus')}</Text>
+          <Card style={[styles.card, {backgroundColor: cardBackgroundColor}]}>
+            <Text category="h5" style={[styles.cardHeader, {color: textColor}]}>
+              {t('justEatStatus')}
+            </Text>
             <Divider style={styles.divider} />
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: textColor }]}>{t('email')}:</Text>
-              <Text style={[styles.detailText, { color: textColor }]}>
+              <Text style={[styles.label, {color: textColor}]}>
+                {t('email')}:
+              </Text>
+              <Text style={[styles.detailText, {color: textColor}]}>
                 {user.justEatEmail ? user.justEatEmail : t('notConnected')}
               </Text>
             </View>
             <View style={styles.infoRow}>
-              <Text category='s1' status={user.justEatEmail ? 'success' : 'danger'} style={styles.statusText}>
+              <Text
+                category="s1"
+                status={user.justEatEmail ? 'success' : 'danger'}
+                style={styles.statusText}>
                 {user.justEatEmail ? t('connected') : t('notConnected')}
               </Text>
             </View>
           </Card>
 
           {/* Subscription Section */}
-          <Card style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-            <Text category='h5' style={[styles.cardHeader, { color: textColor }]}>{t('subscription')}</Text>
+          <Card style={[styles.card, {backgroundColor: cardBackgroundColor}]}>
+            <Text category="h5" style={[styles.cardHeader, {color: textColor}]}>
+              {t('subscription')}
+            </Text>
             <Divider style={styles.divider} />
             <Select
               selectedIndex={selectedOption}
               value={options[selectedOption.row]}
               onSelect={index => setSelectedOption(index)}
-              style={styles.select}
-            >
+              style={styles.select}>
               {options.map((option, index) => (
                 <SelectItem title={option} key={index} />
               ))}
             </Select>
-            <Card style={[styles.pricingCard, { backgroundColor: cardBackgroundColor }]}>
-              <Text category='h6' style={[styles.centeredText, { color: textColor }]}>
-                {selectedOption.row === 0 ? '7 Days - £9.99' : '30 Days - £30.00'}
+            <Card
+              style={[
+                styles.pricingCard,
+                {backgroundColor: cardBackgroundColor},
+              ]}>
+              <Text
+                category="h6"
+                style={[styles.centeredText, {color: textColor}]}>
+                {selectedOption.row === 0
+                  ? '7 Days - £9.99'
+                  : '30 Days - £30.00'}
               </Text>
               <Button
-                onPress={() => handlePayment(selectedOption.row === 0 
-                  ? 'price_1PfxAvB789YNlFfymPS2yicX'
-                  : 'price_1PfxBeB789YNlFfyo40AQZmU')}
+                onPress={() =>
+                  handlePayment(
+                    selectedOption.row === 0
+                      ? 'price_1PfxAvB789YNlFfymPS2yicX'
+                      : 'price_1PfxBeB789YNlFfyo40AQZmU',
+                  )
+                }
                 style={styles.button}
-                status='primary'
-              >
+                status="primary">
                 {t('subscribe')}
               </Button>
             </Card>
-            <Text category='s1' status={subscriptionStatusColor} style={{ textAlign: 'center', marginTop: 8 }}>
+            <Text
+              category="s1"
+              status={subscriptionStatusColor}
+              style={{textAlign: 'center', marginTop: 8}}>
               {subscriptionStatusText}
             </Text>
-            <Button onPress={handleSubscriptionManage} style={styles.manageButton} status='info'>
+            <Button
+              onPress={handleSubscriptionManage}
+              style={styles.manageButton}
+              status="info">
               {t('manageSubscription')}
             </Button>
           </Card>
 
           {/* Update Profile Section */}
-          <Card style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-            <Text category='h5' style={[styles.cardHeader, { color: textColor }]}>{t('updateProfile')}</Text>
+          <Card style={[styles.card, {backgroundColor: cardBackgroundColor}]}>
+            <Text category="h5" style={[styles.cardHeader, {color: textColor}]}>
+              {t('updateProfile')}
+            </Text>
             <Divider style={styles.divider} />
             <Input
               label={t('email')}
               placeholder={t('enterNewEmail')}
               value={email}
               onChangeText={setEmail}
-              style={[styles.input, { backgroundColor: inputBackgroundColor }]}
-              textStyle={{ color: textColor }}
+              style={[styles.input, {backgroundColor: inputBackgroundColor}]}
+              textStyle={{color: textColor}}
               placeholderTextColor={theme === 'dark' ? '#888' : '#AAA'}
             />
-            <Button onPress={handleUpdateEmail} style={styles.emailUpdateButton} status='primary'>
+            <Button
+              onPress={handleUpdateEmail}
+              style={styles.emailUpdateButton}
+              status="primary">
               {t('updateEmail')}
             </Button>
             <Input
@@ -170,17 +245,28 @@ const ProfileScreen = ({ navigation }) => {
               value={password}
               secureTextEntry
               onChangeText={setPassword}
-              style={[styles.input, { backgroundColor: inputBackgroundColor }]}
-              textStyle={{ color: textColor }}
+              style={[styles.input, {backgroundColor: inputBackgroundColor}]}
+              textStyle={{color: textColor}}
               placeholderTextColor={theme === 'dark' ? '#888' : '#AAA'}
             />
-            <Button onPress={handleUpdatePassword} style={styles.button} status='primary'>
+            <Button
+              onPress={handleUpdatePassword}
+              style={styles.button}
+              status="primary">
               {t('updatePassword')}
             </Button>
           </Card>
         </ScrollView>
-        <TouchableOpacity style={styles.scrollToTopButton} onPress={() => scrollViewRef.current.scrollTo({ y: 0, animated: true })}>
-          <Icon name='arrow-upward-outline' fill='#FFFFFF' style={styles.scrollToTopIcon} />
+        <TouchableOpacity
+          style={styles.scrollToTopButton}
+          onPress={() =>
+            scrollViewRef.current.scrollTo({y: 0, animated: true})
+          }>
+          <Icon
+            name="arrow-upward-outline"
+            fill="#FFFFFF"
+            style={styles.scrollToTopIcon}
+          />
         </TouchableOpacity>
       </Layout>
     </SafeAreaView>

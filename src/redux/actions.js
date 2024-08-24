@@ -22,35 +22,38 @@ export const toggleTheme = () => ({
   type: TOGGLE_THEME,
 });
 
-export const setFilters = (filters) => ({
+export const setFilters = filters => ({
   type: SET_FILTERS,
   payload: filters,
 });
 
-export const setJustEatData = (data) => ({
+export const setJustEatData = data => ({
   type: SET_JUST_EAT_DATA,
   payload: data,
 });
 
-export const setUser = (user) => ({
+export const setUser = user => ({
   type: SET_USER,
   payload: user,
 });
 
-export const updateUserEmail = (email) => ({
+export const updateUserEmail = email => ({
   type: UPDATE_USER_EMAIL,
   payload: email,
 });
 
-export const updateUserPassword = (password) => ({
+export const updateUserPassword = password => ({
   type: UPDATE_USER_PASSWORD,
   payload: password,
 });
 
 export const loginUser = (email, password) => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
-      const response = await axios.post('http://localhost:3000/auth/login', { email, password });
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email,
+        password,
+      });
       if (response.status === 200) {
         const userData = {
           userId: response.data.userId,
@@ -64,23 +67,35 @@ export const loginUser = (email, password) => {
         dispatch(checkSubscriptionStatus());
 
         if (userData.justEatEmail && userData.justEatPassword) {
-          dispatch(connectJustEat(userData.justEatEmail, userData.justEatPassword, userData.userId));
+          dispatch(
+            connectJustEat(
+              userData.justEatEmail,
+              userData.justEatPassword,
+              userData.userId,
+            ),
+          );
         }
       }
     } catch (error) {
-      console.error('Error logging in:', error.response ? error.response.data : error.message);
+      console.error(
+        'Error logging in:',
+        error.response ? error.response.data : error.message,
+      );
     }
   };
 };
 
 export const connectJustEat = (email, password, userId) => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
-      const justEatResponse = await axios.post('http://localhost:3000/justEat/connect', {
-        justEatEmail: email,
-        justEatPassword: password,
-        userId: userId,
-      });
+      const justEatResponse = await axios.post(
+        'http://localhost:3000/justEat/connect',
+        {
+          justEatEmail: email,
+          justEatPassword: password,
+          userId: userId,
+        },
+      );
 
       if (justEatResponse.status === 200) {
         const justEatData = {
@@ -92,29 +107,37 @@ export const connectJustEat = (email, password, userId) => {
         console.error('Falha na conexão com Just Eat:', justEatResponse.data);
       }
     } catch (error) {
-      console.error('Erro ao conectar com Just Eat:', error.response ? error.response.data : error.message);
+      console.error(
+        'Erro ao conectar com Just Eat:',
+        error.response ? error.response.data : error.message,
+      );
     }
   };
 };
 
-export const createCheckoutSession = (plan) => {
+export const createCheckoutSession = plan => {
   return async (dispatch, getState) => {
-    const { user } = getState();
+    const {user} = getState();
 
     try {
       if (!user.userId) {
         throw new Error('User ID is not available');
       }
 
-      const response = await axios.post('http://localhost:3000/payment/create-checkout-session', {
-        priceId: plan,
-        userId: user.userId,
-      });
+      const response = await axios.post(
+        'http://localhost:3000/payment/create-checkout-session',
+        {
+          priceId: plan,
+          userId: user.userId,
+        },
+      );
 
       if (response.status === 200 && response.data.url) {
-        return response.data.url; 
+        return response.data.url;
       } else {
-        throw new Error(response.data.error || 'Failed to create checkout session');
+        throw new Error(
+          response.data.error || 'Failed to create checkout session',
+        );
       }
     } catch (error) {
       console.error('Error creating checkout session:', error.message);
@@ -125,16 +148,19 @@ export const createCheckoutSession = (plan) => {
 
 export const checkSubscriptionStatus = () => {
   return async (dispatch, getState) => {
-    const { user } = getState();
+    const {user} = getState();
 
     try {
       if (!user.Id) {
         throw new Error('User ID is not available');
       }
 
-      const response = await axios.post('http://localhost:3000/subscription/status', {
-        userId: user.Id, 
-      });
+      const response = await axios.post(
+        'http://localhost:3000/subscription/status',
+        {
+          userId: user.Id,
+        },
+      );
 
       if (response.status === 200) {
         dispatch({
@@ -150,8 +176,8 @@ export const checkSubscriptionStatus = () => {
   };
 };
 
-export const updateUserEmailAsync = (email) => async (dispatch, getState) => {
-  const { user } = getState();
+export const updateUserEmailAsync = email => async (dispatch, getState) => {
+  const {user} = getState();
 
   if (!user.userId) {
     console.error('User ID is not available');
@@ -159,7 +185,10 @@ export const updateUserEmailAsync = (email) => async (dispatch, getState) => {
   }
 
   try {
-    const response = await axios.put('http://localhost:3000/auth/update-email', { userId: user.userId, newEmail: email });
+    const response = await axios.put(
+      'http://localhost:3000/auth/update-email',
+      {userId: user.userId, newEmail: email},
+    );
     if (response.status === 200) {
       dispatch({
         type: UPDATE_USER_EMAIL,
@@ -171,20 +200,24 @@ export const updateUserEmailAsync = (email) => async (dispatch, getState) => {
   }
 };
 
-export const updateUserPasswordAsync = (password) => async (dispatch, getState) => {
-  const { user } = getState();
+export const updateUserPasswordAsync =
+  password => async (dispatch, getState) => {
+    const {user} = getState();
 
-  if (!user.userId) {
-    console.error('User ID is not available');
-    return;
-  }
-
-  try {
-    const response = await axios.put('http://localhost:3000/auth/update-password', { userId: user.userId, newPassword: password });
-    if (response.status === 200) {
-      dispatch(updateUserPassword(password));
+    if (!user.userId) {
+      console.error('User ID is not available');
+      return;
     }
-  } catch (error) {
-    console.error('Error updating password:', error.message);
-  }
-};
+
+    try {
+      const response = await axios.put(
+        'http://localhost:3000/auth/update-password',
+        {userId: user.userId, newPassword: password},
+      );
+      if (response.status === 200) {
+        dispatch(updateUserPassword(password));
+      }
+    } catch (error) {
+      console.error('Error updating password:', error.message);
+    }
+  };

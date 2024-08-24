@@ -1,27 +1,30 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Formik } from 'formik';
+import {StyleSheet, View} from 'react-native';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
-import { Layout, Input, Button, Text } from '@ui-kitten/components';
-import { setUser } from '../redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
+import {Layout, Input, Button, Text} from '@ui-kitten/components';
+import {setUser} from '../redux/actions';
+import {useDispatch, useSelector} from 'react-redux';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme);
 
   return (
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{email: '', password: ''}}
       validationSchema={Yup.object({
         email: Yup.string().email('Invalid email address').required('Required'),
-        password: Yup.string().required('Required')
+        password: Yup.string().required('Required'),
       })}
-      onSubmit={async (values, { setSubmitting }) => {
+      onSubmit={async (values, {setSubmitting}) => {
         try {
-          const response = await axios.post('http://localhost:3000/auth/login', values);
+          const response = await axios.post(
+            'http://localhost:3000/auth/login',
+            values,
+          );
           const userData = {
             userId: response.data.userId,
             token: response.data.token,
@@ -29,31 +32,44 @@ const LoginScreen = ({ navigation }) => {
             trialEnd: response.data.trialEnd,
           };
           dispatch(setUser(userData));
-          navigation.navigate('JustEat', { token: response.data.token });
+          navigation.navigate('JustEat', {token: response.data.token});
         } catch (error) {
           console.error(error);
         } finally {
           setSubmitting(false);
         }
-      }}
-    >
-      {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-        <Layout style={[styles.container, theme === 'dark' ? styles.darkContainer : styles.lightContainer]}>
+      }}>
+      {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <Layout
+          style={[
+            styles.container,
+            theme === 'dark' ? styles.darkContainer : styles.lightContainer,
+          ]}>
           <Animatable.Image
             animation="bounceIn"
             duration={1500}
             source={require('../img/logo.png')}
             style={styles.logo}
           />
-          <Text category='h3' style={[styles.header, theme === 'dark' ? styles.darkText : styles.lightText]}>Lighting Grabber</Text>
+          <Text
+            category="h3"
+            style={[
+              styles.header,
+              theme === 'dark' ? styles.darkText : styles.lightText,
+            ]}>
+            Lighting Grabber
+          </Text>
           <Input
             label="Email"
             onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
             value={values.email}
             placeholder="Email"
-            style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-            textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+            style={[
+              styles.input,
+              theme === 'dark' ? styles.darkInput : styles.lightInput,
+            ]}
+            textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
             status={touched.email && errors.email ? 'danger' : 'basic'}
             caption={touched.email && errors.email ? errors.email : ''}
           />
@@ -64,8 +80,11 @@ const LoginScreen = ({ navigation }) => {
             value={values.password}
             placeholder="Password"
             secureTextEntry
-            style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-            textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+            style={[
+              styles.input,
+              theme === 'dark' ? styles.darkInput : styles.lightInput,
+            ]}
+            textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
             status={touched.password && errors.password ? 'danger' : 'basic'}
             caption={touched.password && errors.password ? errors.password : ''}
           />
@@ -73,8 +92,16 @@ const LoginScreen = ({ navigation }) => {
             Login
           </Button>
           <View style={styles.registerContainer}>
-            <Text style={[styles.text, theme === 'dark' ? styles.darkText : styles.lightText]}>Already registered?</Text>
-            <Button onPress={() => navigation.navigate('Register')} appearance='ghost'>
+            <Text
+              style={[
+                styles.text,
+                theme === 'dark' ? styles.darkText : styles.lightText,
+              ]}>
+              Already registered?
+            </Text>
+            <Button
+              onPress={() => navigation.navigate('Register')}
+              appearance="ghost">
               Register
             </Button>
           </View>

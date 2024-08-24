@@ -1,5 +1,5 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import {initReactI18next} from 'react-i18next';
 import * as Localization from 'react-native-localize';
 
 // Translation resources
@@ -9,14 +9,17 @@ const resources = {
       hello: 'Hello',
       title: 'Lighting Grabber',
       instructions: 'Instructions',
-      trialInfo: 'You have a 3-day free trial. Your trial ends on {{trialEnd}}.',
+      trialInfo:
+        'You have a 3-day free trial. Your trial ends on {{trialEnd}}.',
       steps: [
         'Ensure that your filters are activated to select the shifts you prefer.',
         'Keep the bot enabled to automatically pick up shifts for you.',
         'You can close the app while the bot is running, and it will continue to pick shifts for you. The bot will only stop if you disable it.',
       ],
-      feedback: 'This booster feature is currently in testing, so your feedback is appreciated!',
-      boosterExplanation: 'To improve performance and get more orders, keep the booster feature enabled.',
+      feedback:
+        'This booster feature is currently in testing, so your feedback is appreciated!',
+      boosterExplanation:
+        'To improve performance and get more orders, keep the booster feature enabled.',
       enableBooster: 'Enable Booster Orders',
       disableBooster: 'Disable Booster Orders',
       startBot: 'Start Bot',
@@ -79,8 +82,8 @@ const resources = {
       paymentFooter: 'All payments are processed through Stripe.',
       support: 'Support',
       contactSupport: 'For support, contact us via email or WhatsApp:',
-      infoApplyFilters: "Please click 'Apply Filters' to validate your time selections."
-
+      infoApplyFilters:
+        "Please click 'Apply Filters' to validate your time selections.",
     },
   },
   es: {
@@ -88,14 +91,17 @@ const resources = {
       hello: 'Hola',
       title: 'Capturador de Turnos',
       instructions: 'Instrucciones',
-      trialInfo: 'Tienes una prueba gratuita de 3 días. Tu prueba termina el {{trialEnd}}.',
+      trialInfo:
+        'Tienes una prueba gratuita de 3 días. Tu prueba termina el {{trialEnd}}.',
       steps: [
         'Asegúrate de que tus filtros estén activados para seleccionar los turnos que prefieras.',
         'Mantén el bot habilitado para recoger turnos automáticamente.',
         'Puedes cerrar la aplicación mientras el bot está funcionando, y continuará recogiendo turnos para ti. El bot solo se detendrá si lo desactivas.',
       ],
-      feedback: '¡Esta función de refuerzo está actualmente en prueba, por lo que agradecemos tus comentarios!',
-      boosterExplanation: 'Para mejorar el rendimiento y obtener más pedidos, mantén habilitada la función de refuerzo.',
+      feedback:
+        '¡Esta función de refuerzo está actualmente en prueba, por lo que agradecemos tus comentarios!',
+      boosterExplanation:
+        'Para mejorar el rendimiento y obtener más pedidos, mantén habilitada la función de refuerzo.',
       enableBooster: 'Activar Pedidos de Refuerzo',
       disableBooster: 'Desactivar Pedidos de Refuerzo',
       startBot: 'Iniciar Bot',
@@ -141,7 +147,8 @@ const resources = {
       updateProfile: 'Actualizar Perfil',
       enterNewEmail: 'Ingrese un nuevo correo electrónico',
       emailUpdated: 'Correo Electrónico Actualizado',
-      emailUpdateSuccess: 'Tu correo electrónico se ha actualizado correctamente.',
+      emailUpdateSuccess:
+        'Tu correo electrónico se ha actualizado correctamente.',
       updateEmail: 'Actualizar Correo Electrónico',
       password: 'Contraseña',
       enterNewPassword: 'Ingrese una nueva contraseña',
@@ -157,9 +164,10 @@ const resources = {
       subscribe: 'SUSCRIBIRSE',
       paymentFooter: 'Todos los pagos se procesan a través de Stripe.',
       support: 'Soporte',
-      contactSupport: 'Para soporte, contáctenos por correo electrónico o WhatsApp:',
-      infoApplyFilters: "Por favor, haz clic en 'Aplicar Filtros' para validar tus selecciones de tiempo."
-
+      contactSupport:
+        'Para soporte, contáctenos por correo electrónico o WhatsApp:',
+      infoApplyFilters:
+        "Por favor, haz clic en 'Aplicar Filtros' para validar tus selecciones de tiempo.",
     },
   },
   pt: {
@@ -167,14 +175,17 @@ const resources = {
       hello: 'Olá',
       title: 'Capturador de Turnos',
       instructions: 'Instruções',
-      trialInfo: 'Você tem um teste gratuito de 3 dias. Seu teste termina em {{trialEnd}}.',
+      trialInfo:
+        'Você tem um teste gratuito de 3 dias. Seu teste termina em {{trialEnd}}.',
       steps: [
         'Certifique-se de que seus filtros estejam ativados para selecionar os turnos que você prefere.',
         'Mantenha o bot ativado para pegar turnos automaticamente.',
         'Você pode fechar o aplicativo enquanto o bot está funcionando, e ele continuará pegando turnos para você. O bot só parará se você desativá-lo.',
       ],
-      feedback: 'Esta funcionalidade de reforço está atualmente em teste, então seu feedback é apreciado!',
-      boosterExplanation: 'Para melhorar o desempenho e obter mais pedidos, mantenha a função de reforço ativada.',
+      feedback:
+        'Esta funcionalidade de reforço está atualmente em teste, então seu feedback é apreciado!',
+      boosterExplanation:
+        'Para melhorar o desempenho e obter mais pedidos, mantenha a função de reforço ativada.',
       enableBooster: 'Ativar booster de pedidos',
       disableBooster: 'Desativar booster de pedidos',
       startBot: 'Iniciar Bot',
@@ -236,9 +247,10 @@ const resources = {
       subscribe: 'ASSINAR',
       paymentFooter: 'Todos os pagamentos são processados através do Stripe.',
       support: 'Suporte',
-      contactSupport: 'Para suporte, entre em contato conosco por e-mail ou WhatsApp:',
-      infoApplyFilters: "Por favor, clique em 'Aplicar Filtros' para validar suas seleções de horário."
-
+      contactSupport:
+        'Para suporte, entre em contato conosco por e-mail ou WhatsApp:',
+      infoApplyFilters:
+        "Por favor, clique em 'Aplicar Filtros' para validar suas seleções de horário.",
     },
   },
   hi: {
@@ -246,20 +258,23 @@ const resources = {
       hello: 'नमस्ते',
       title: 'शिफ्ट ग्रैबर',
       instructions: 'निर्देश',
-      trialInfo: 'आपके पास 3-दिन का निःशुल्क परीक्षण है। आपका परीक्षण {{trialEnd}} को समाप्त हो रहा है।',
+      trialInfo:
+        'आपके पास 3-दिन का निःशुल्क परीक्षण है। आपका परीक्षण {{trialEnd}} को समाप्त हो रहा है।',
       steps: [
         'सुनिश्चित करें कि आपके फ़िल्टर सक्रिय हैं ताकि आप अपनी पसंद की शिफ्ट का चयन कर सकें।',
         'शिफ्ट को स्वचालित रूप से लेने के लिए बॉट को सक्रिय रखें।',
         'आप ऐप को बंद कर सकते हैं जबकि बॉट चल रहा है, और यह आपके लिए शिफ्ट को उठाता रहेगा। बॉट केवल तभी रुकेगा जब आप इसे निष्क्रिय करेंगे।',
       ],
-      feedback: 'यह बूस्टर सुविधा वर्तमान में परीक्षण में है, इसलिए आपकी प्रतिक्रिया की सराहना की जाती है!',
-      boosterExplanation: 'प्रदर्शन को बेहतर बनाने और अधिक ऑर्डर प्राप्त करने के लिए, बूस्टर सुविधा को सक्षम रखें।',
+      feedback:
+        'यह बूस्टर सुविधा वर्तमान में परीक्षण में है, इसलिए आपकी प्रतिक्रिया की सराहना की जाती है!',
+      boosterExplanation:
+        'प्रदर्शन को बेहतर बनाने और अधिक ऑर्डर प्राप्त करने के लिए, बूस्टर सुविधा को सक्षम रखें।',
       enableBooster: 'बूस्टर ऑर्डर सक्षम करें',
       disableBooster: 'बूस्टर ऑर्डर अक्षम करें',
       startBot: 'बॉट शुरू करें',
       stopBot: 'बॉट बंद करें',
       footer: '© 2024 सर्वाधिकार सुरक्षित',
-  
+
       home: 'होम',
       filters: 'फ़िल्टर',
       profile: 'प्रोफ़ाइल',
@@ -315,9 +330,10 @@ const resources = {
       subscribe: 'सदस्यता लें',
       paymentFooter: 'सभी भुगतान Stripe के माध्यम से संसाधित किए जाते हैं।',
       support: 'सहायता',
-      contactSupport: 'सहायता के लिए, हमसे ईमेल या व्हाट्सएप के माध्यम से संपर्क करें:',
-      infoApplyFilters: "कृपया अपने समय चयन को मान्य करने के लिए 'फ़िल्टर लागू करें' पर क्लिक करें।"
-
+      contactSupport:
+        'सहायता के लिए, हमसे ईमेल या व्हाट्सएप के माध्यम से संपर्क करें:',
+      infoApplyFilters:
+        "कृपया अपने समय चयन को मान्य करने के लिए 'फ़िल्टर लागू करें' पर क्लिक करें।",
     },
   },
   it: {
@@ -325,14 +341,17 @@ const resources = {
       hello: 'Ciao',
       title: 'Cattura Turni',
       instructions: 'Istruzioni',
-      trialInfo: 'Hai una prova gratuita di 3 giorni. La tua prova termina il {{trialEnd}}.',
+      trialInfo:
+        'Hai una prova gratuita di 3 giorni. La tua prova termina il {{trialEnd}}.',
       steps: [
         'Assicurati che i tuoi filtri siano attivati per selezionare i turni che preferisci.',
         'Mantieni attivo il bot per prendere automaticamente i turni.',
-        'Puoi chiudere l\'app mentre il bot è in esecuzione, e continuerà a prendere turni per te. Il bot si fermerà solo se lo disattivi.',
+        "Puoi chiudere l'app mentre il bot è in esecuzione, e continuerà a prendere turni per te. Il bot si fermerà solo se lo disattivi.",
       ],
-      feedback: 'Questa funzione booster è attualmente in fase di test, quindi il tuo feedback è apprezzato!',
-      boosterExplanation: 'Per migliorare le prestazioni e ottenere più ordini, mantieni attiva la funzione booster.',
+      feedback:
+        'Questa funzione booster è attualmente in fase di test, quindi il tuo feedback è apprezzato!',
+      boosterExplanation:
+        'Per migliorare le prestazioni e ottenere più ordini, mantieni attiva la funzione booster.',
       enableBooster: 'Abilita Ordini Booster',
       disableBooster: 'Disabilita Ordini Booster',
       startBot: 'Avvia Bot',
@@ -395,8 +414,8 @@ const resources = {
       paymentFooter: 'Tutti i pagamenti sono elaborati tramite Stripe.',
       support: 'Supporto',
       contactSupport: 'Per supporto, contattaci via email o WhatsApp:',
-      infoApplyFilters: "Fai clic su 'Applica Filtri' per convalidare le tue selezioni di tempo."
-
+      infoApplyFilters:
+        "Fai clic su 'Applica Filtri' per convalidare le tue selezioni di tempo.",
     },
   },
   ar: {
@@ -410,8 +429,10 @@ const resources = {
         'احتفظ بتفعيل البوت لالتقاط الشيفتات تلقائيًا.',
         'يمكنك إغلاق التطبيق أثناء تشغيل البوت، وسيستمر في التقاط الشيفتات نيابة عنك. سيتوقف البوت فقط إذا قمت بتعطيله.',
       ],
-      feedback: 'ميزة التعزيز هذه قيد الاختبار حاليًا، لذا فإن ملاحظاتك محل تقدير!',
-      boosterExplanation: 'لتحسين الأداء والحصول على المزيد من الطلبات، احتفظ بميزة التعزيز مفعلة.',
+      feedback:
+        'ميزة التعزيز هذه قيد الاختبار حاليًا، لذا فإن ملاحظاتك محل تقدير!',
+      boosterExplanation:
+        'لتحسين الأداء والحصول على المزيد من الطلبات، احتفظ بميزة التعزيز مفعلة.',
       enableBooster: 'تمكين طلبات التعزيز',
       disableBooster: 'تعطيل طلبات التعزيز',
       startBot: 'بدء البوت',
@@ -474,8 +495,8 @@ const resources = {
       paymentFooter: 'يتم معالجة جميع المدفوعات من خلال Stripe.',
       support: 'الدعم',
       contactSupport: 'للدعم، اتصل بنا عبر البريد الإلكتروني أو WhatsApp:',
-      infoApplyFilters: "يرجى النقر على 'تطبيق الفلاتر' لتأكيد اختياراتك الزمنية."
-
+      infoApplyFilters:
+        "يرجى النقر على 'تطبيق الفلاتر' لتأكيد اختياراتك الزمنية.",
     },
   },
 };

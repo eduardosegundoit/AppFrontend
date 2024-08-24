@@ -1,40 +1,46 @@
 {
-  "name": "LightingGrabberApp",
-  "displayName": "LightingGrabberApp",
   "expo": {
-    "updates": {
-      "enabled": true,
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/dda61317-0bbd-4253-8024-fdd608e12b1b"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "dda61317-0bbd-4253-8024-fdd608e12b1b"
-      }
-    },
-    "runtimeVersion": "2.0.0",
+    "name": "LightingGrabberApp",
+    "slug": "lightinggrabberapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lightinggrabberapp",
+      "buildNumber": "3",
+      "icon": "./assets/icon120.png"
+    },
     "android": {
-      "package": "com.yourcompany.lightinggrabberapp",  
+      "package": "com.lightinggrabberapp",
       "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       }
     },
-    "ios": {
-      "bundleIdentifier": "com.yourcompany.lightinggrabberapp",  
-      "buildNumber": "3",
-      "icon": "./assets/icon.png"
-    },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dda61317-0bbd-4253-8024-fdd608e12b1b"
+      }
+    },
+    "runtimeVersion": "2.0.0"
   }
 }

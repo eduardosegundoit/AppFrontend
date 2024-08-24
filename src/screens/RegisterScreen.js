@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Alert, StyleSheet, View} from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { Layout, Input, Button, Text } from '@ui-kitten/components';
-import { useSelector } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {Layout, Input, Button, Text} from '@ui-kitten/components';
+import {useSelector} from 'react-redux';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -36,15 +36,21 @@ const RegisterScreen = () => {
 
   const handleSendVerificationCode = async () => {
     if (timer > 0) {
-      Alert.alert('Wait', `Please wait ${timer} seconds before requesting another code.`);
+      Alert.alert(
+        'Wait',
+        `Please wait ${timer} seconds before requesting another code.`,
+      );
       return;
     }
 
     try {
       console.log(`Requesting verification code for phone: ${phone}`);
-      const response = await axios.post('http://localhost:3000/auth/send-verification-code', {
-        phone: phone.startsWith('+') ? phone : `+${phone}`
-      });
+      const response = await axios.post(
+        'http://localhost:3000/auth/send-verification-code',
+        {
+          phone: phone.startsWith('+') ? phone : `+${phone}`,
+        },
+      );
 
       if (response.data.message === 'Verification code sent') {
         console.log('Verification code sent successfully');
@@ -57,19 +63,28 @@ const RegisterScreen = () => {
         Alert.alert('Error', response.data.message);
       }
     } catch (error) {
-      console.error('Error sending verification code:', error.response ? error.response.data.error : error.message);
+      console.error(
+        'Error sending verification code:',
+        error.response ? error.response.data.error : error.message,
+      );
       setSendCodeStatus('error');
-      Alert.alert('Error', error.response ? error.response.data.error : error.message);
+      Alert.alert(
+        'Error',
+        error.response ? error.response.data.error : error.message,
+      );
     }
   };
 
   const handleVerifyCode = async () => {
     try {
       console.log(`Verifying code: ${verificationCode} for phone: ${phone}`);
-      const response = await axios.post('http://localhost:3000/auth/verify-code', {
-        phone: phone.startsWith('+') ? phone : `+${phone}`,
-        providedCode: verificationCode
-      });
+      const response = await axios.post(
+        'http://localhost:3000/auth/verify-code',
+        {
+          phone: phone.startsWith('+') ? phone : `+${phone}`,
+          providedCode: verificationCode,
+        },
+      );
       if (response.data.message === 'Verification code is correct') {
         console.log('Verification code is correct');
         setVerificationStatus('success');
@@ -80,15 +95,24 @@ const RegisterScreen = () => {
         Alert.alert('Error', 'Invalid verification code.');
       }
     } catch (error) {
-      console.error('Error verifying code:', error.response ? error.response.data.error : error.message);
+      console.error(
+        'Error verifying code:',
+        error.response ? error.response.data.error : error.message,
+      );
       setVerificationStatus('error');
-      Alert.alert('Error', error.response ? error.response.data.error : error.message);
+      Alert.alert(
+        'Error',
+        error.response ? error.response.data.error : error.message,
+      );
     }
   };
 
   const handleRegister = async () => {
     if (verificationStatus !== 'success') {
-      Alert.alert('Error', 'Please verify your phone number before registering.');
+      Alert.alert(
+        'Error',
+        'Please verify your phone number before registering.',
+      );
       return;
     }
 
@@ -97,13 +121,13 @@ const RegisterScreen = () => {
         name,
         email,
         password,
-        phone: phone.startsWith('+') ? phone : `+${phone}`
+        phone: phone.startsWith('+') ? phone : `+${phone}`,
       });
       console.log(response.data.message);
       if (response.data.message === 'User registered successfully') {
         console.log('User registered successfully');
         Alert.alert('Success', 'User registered successfully.', [
-          { text: 'OK', onPress: () => navigation.navigate('Login') }
+          {text: 'OK', onPress: () => navigation.navigate('Login')},
         ]);
       } else if (response.data.message === 'User already exists') {
         console.error('User already exists');
@@ -113,52 +137,76 @@ const RegisterScreen = () => {
         Alert.alert('Error', 'Failed to register user.');
       }
     } catch (error) {
-      console.error('Error registering user:', error.response ? error.response.data.error : error.message);
-      Alert.alert('Error', error.response ? error.response.data.error : error.message);
+      console.error(
+        'Error registering user:',
+        error.response ? error.response.data.error : error.message,
+      );
+      Alert.alert(
+        'Error',
+        error.response ? error.response.data.error : error.message,
+      );
     }
   };
 
   return (
-    <Layout style={[styles.container, theme === 'dark' ? styles.darkContainer : styles.lightContainer]}>
+    <Layout
+      style={[
+        styles.container,
+        theme === 'dark' ? styles.darkContainer : styles.lightContainer,
+      ]}>
       <Input
         label="Name"
         value={name}
         onChangeText={setName}
-        style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+        style={[
+          styles.input,
+          theme === 'dark' ? styles.darkInput : styles.lightInput,
+        ]}
+        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
       />
       <Input
         label="Email"
         value={email}
         onChangeText={setEmail}
-        style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+        style={[
+          styles.input,
+          theme === 'dark' ? styles.darkInput : styles.lightInput,
+        ]}
+        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
       />
       <Input
         label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
-        style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+        style={[
+          styles.input,
+          theme === 'dark' ? styles.darkInput : styles.lightInput,
+        ]}
+        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
       />
       <Input
         label="Phone (+4401234567891)"
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
-        style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+        style={[
+          styles.input,
+          theme === 'dark' ? styles.darkInput : styles.lightInput,
+        ]}
+        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
       />
       <Button
         onPress={handleSendVerificationCode}
         disabled={timer > 0}
         style={[
           styles.button,
-          sendCodeStatus === 'success' ? styles.successButton :
-          sendCodeStatus === 'error' ? styles.errorButton : null
-        ]}
-      >
+          sendCodeStatus === 'success'
+            ? styles.successButton
+            : sendCodeStatus === 'error'
+            ? styles.errorButton
+            : null,
+        ]}>
         Send Verification Code
       </Button>
       <Input
@@ -166,26 +214,39 @@ const RegisterScreen = () => {
         value={verificationCode}
         onChangeText={setVerificationCode}
         keyboardType="number-pad"
-        style={[styles.input, theme === 'dark' ? styles.darkInput : styles.lightInput]}
-        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
+        style={[
+          styles.input,
+          theme === 'dark' ? styles.darkInput : styles.lightInput,
+        ]}
+        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
       />
       <Button
         onPress={handleVerifyCode}
         style={[
           styles.button,
-          verificationStatus === 'success' ? styles.successButton :
-          verificationStatus === 'error' ? styles.errorButton : null
-        ]}
-      >
+          verificationStatus === 'success'
+            ? styles.successButton
+            : verificationStatus === 'error'
+            ? styles.errorButton
+            : null,
+        ]}>
         Verify Code
       </Button>
       <Button onPress={handleRegister} style={styles.button}>
         Register
       </Button>
-      {timer > 0 && <Text>Please wait {timer} seconds before requesting another code.</Text>}
+      {timer > 0 && (
+        <Text>Please wait {timer} seconds before requesting another code.</Text>
+      )}
       <View style={styles.loginContainer}>
-        <Text style={[styles.text, theme === 'dark' ? styles.darkText : styles.lightText]}>Already registered?</Text>
-        <Button onPress={() => navigation.navigate('Login')} appearance='ghost'>
+        <Text
+          style={[
+            styles.text,
+            theme === 'dark' ? styles.darkText : styles.lightText,
+          ]}>
+          Already registered?
+        </Text>
+        <Button onPress={() => navigation.navigate('Login')} appearance="ghost">
           Login
         </Button>
       </View>

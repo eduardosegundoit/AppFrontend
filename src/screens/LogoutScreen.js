@@ -1,9 +1,9 @@
 // screens/LogoutScreen.js
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { logout } from '../redux/actions';
+import React, {useEffect} from 'react';
+import {useDispatch} from 'react-redux';
+import {logout} from '../redux/actions';
 
-const LogoutScreen = ({ navigation }) => {
+const LogoutScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
   useEffect(() => {

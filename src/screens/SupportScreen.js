@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Linking } from 'react-native';
-import { useSelector } from 'react-redux';
-import { Layout, Text, Card, Icon, Button } from '@ui-kitten/components';
-import { useTranslation } from 'react-i18next';
+import React, {useEffect} from 'react';
+import {StyleSheet, Linking} from 'react-native';
+import {useSelector} from 'react-redux';
+import {Layout, Text, Card, Icon, Button} from '@ui-kitten/components';
+import {useTranslation} from 'react-i18next';
 
-const SupportScreen = ({ navigation }) => {
-  const { t } = useTranslation();
+const SupportScreen = ({navigation}) => {
+  const {t} = useTranslation();
   const theme = useSelector(state => state.theme);
   const isDarkTheme = theme === 'dark';
   const backgroundColor = isDarkTheme ? '#222B45' : '#FFFFFF';
@@ -33,28 +33,30 @@ const SupportScreen = ({ navigation }) => {
   };
 
   return (
-    <Layout style={[styles.container, { backgroundColor }]}>
-      <Text category='h1' style={[styles.header, { color: textColor }]}>
+    <Layout style={[styles.container, {backgroundColor}]}>
+      <Text category="h1" style={[styles.header, {color: textColor}]}>
         {t('support')}
       </Text>
-      <Card style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
-        <Text category='s1' style={[styles.text, { color: textColor }]}>
+      <Card style={[styles.card, {backgroundColor: cardBackgroundColor}]}>
+        <Text category="s1" style={[styles.text, {color: textColor}]}>
           {t('contactSupport')}
         </Text>
         <Button
           style={styles.button}
-          appearance='ghost'
-          accessoryLeft={(props) => <Icon {...props} name='email-outline' fill='#808080' />}
-          onPress={handleEmailPress}
-        >
+          appearance="ghost"
+          accessoryLeft={props => (
+            <Icon {...props} name="email-outline" fill="#808080" />
+          )}
+          onPress={handleEmailPress}>
           lightinggrabberuk@gmail.com
         </Button>
         <Button
           style={styles.button}
-          appearance='ghost'
-          accessoryLeft={(props) => <Icon {...props} name='message-circle-outline' fill='#25D366' />}
-          onPress={handleWhatsAppPress}
-        >
+          appearance="ghost"
+          accessoryLeft={props => (
+            <Icon {...props} name="message-circle-outline" fill="#25D366" />
+          )}
+          onPress={handleWhatsAppPress}>
           WhatsApp
         </Button>
       </Card>
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,

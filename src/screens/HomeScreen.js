@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Alert, Linking, Image, ScrollView, TouchableOpacity } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  Alert,
+  Linking,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import axios from 'axios';
-import { Layout, Text, Button, Toggle, Card } from '@ui-kitten/components';
-import { useTranslation } from 'react-i18next';
+import {Layout, Text, Button, Toggle, Card} from '@ui-kitten/components';
+import {useTranslation} from 'react-i18next';
 import moment from 'moment';
-import { toggleBot } from '../redux/actions';
-import '../i18n'; 
+import {toggleBot} from '../redux/actions';
+import '../i18n';
 
-const HomeScreen = ({ navigation }) => {
-  const { t, i18n } = useTranslation();
+const HomeScreen = ({navigation}) => {
+  const {t, i18n} = useTranslation();
   const theme = useSelector(state => state.theme);
   const user = useSelector(state => state.user);
   const justEatData = useSelector(state => state.justEatData);
   const filters = useSelector(state => state.filters);
-  const subscriptionStatus = useSelector(state => state.user.subscriptionStatus);
+  const subscriptionStatus = useSelector(
+    state => state.user.subscriptionStatus,
+  );
   const trialEnd = useSelector(state => state.user.trialEnd);
   const botActive = useSelector(state => state.botEnabled);
   const dispatch = useDispatch();
@@ -22,30 +31,37 @@ const HomeScreen = ({ navigation }) => {
 
   const handleToggleBot = async () => {
     try {
-      const response = await axios.post(`http://localhost:3000/bot/${botActive ? 'stop' : 'start'}`, {
-        userId: user._id,
-      });
+      const response = await axios.post(
+        `http://localhost:3000/bot/${botActive ? 'stop' : 'start'}`,
+        {
+          userId: user._id,
+        },
+      );
 
       if (response.status === 200) {
         Alert.alert(
           botActive ? t('Bot Stopped') : t('Bot Started'),
           response.data.message,
-          [{ text: 'OK' }]
+          [{text: 'OK'}],
         );
         dispatch(toggleBot());
       } else {
         Alert.alert(
           t('Error'),
           response.data.message || t('An error occurred'),
-          [{ text: 'OK' }]
+          [{text: 'OK'}],
         );
       }
     } catch (error) {
-      console.error('Erro ao ligar/desligar o bot:', error.response ? error.response.data : error.message);
+      console.error(
+        'Erro ao ligar/desligar o bot:',
+        error.response ? error.response.data : error.message,
+      );
       Alert.alert(
         t('Error'),
-        error.response?.data?.message || t('An error occurred while toggling the bot.'),
-        [{ text: 'OK' }]
+        error.response?.data?.message ||
+          t('An error occurred while toggling the bot.'),
+        [{text: 'OK'}],
       );
     }
   };
@@ -63,8 +79,7 @@ const HomeScreen = ({ navigation }) => {
         <Button
           onPress={handleToggleBot}
           status={botActive ? 'danger' : 'success'}
-          style={styles.headerButton}
-        >
+          style={styles.headerButton}>
           {botActive ? t('stopBot') : t('startBot')}
         </Button>
       ),
@@ -79,15 +94,23 @@ const HomeScreen = ({ navigation }) => {
           console.log('Dados Just Eat recebidos na HomeScreen:', justEatData);
 
           if (!justEatData.token || !justEatData.id) {
-            console.error('UserToken ou courierId não definido:', { userToken: justEatData.token, courierId: justEatData.id });
+            console.error('UserToken ou courierId não definido:', {
+              userToken: justEatData.token,
+              courierId: justEatData.id,
+            });
             return;
           }
 
-          const response = await axios.post(`http://localhost:3000/justeat/fetchShifts/${justEatData.id}`, {
-            userToken: justEatData.token,
-          });
+          const response = await axios.post(
+            `http://localhost:3000/justeat/fetchShifts/${justEatData.id}`,
+            {
+              userToken: justEatData.token,
+            },
+          );
 
-          const shifts = Array.isArray(response.data.availableShifts) ? response.data.availableShifts : [];
+          const shifts = Array.isArray(response.data.availableShifts)
+            ? response.data.availableShifts
+            : [];
           console.log('Turnos disponíveis:', shifts);
 
           if (shifts.length === 0) {
@@ -96,7 +119,9 @@ const HomeScreen = ({ navigation }) => {
           }
 
           const filteredShifts = shifts.filter(shift => {
-            const { day, time } = convertMillisecondsToDayAndHour(shift.shiftTime.start);
+            const {day, time} = convertMillisecondsToDayAndHour(
+              shift.shiftTime.start,
+            );
             const filter = filters[day];
             if (filter && filter.active) {
               const startHour = timeOptions[filter.start];
@@ -110,26 +135,39 @@ const HomeScreen = ({ navigation }) => {
 
           for (const shift of filteredShifts) {
             try {
-              const confirmResponse = await axios.post(`http://localhost:3000/justeat/confirmShift/${justEatData.id}/${shift.id}`, {
-                userToken: justEatData.token,
-              });
+              const confirmResponse = await axios.post(
+                `http://localhost:3000/justeat/confirmShift/${justEatData.id}/${shift.id}`,
+                {
+                  userToken: justEatData.token,
+                },
+              );
 
               if (confirmResponse.status === 200) {
                 console.log('Turno confirmado:', shift);
                 Alert.alert(
-                  "Shift Confirmed",
-                  `Shift starting at ${new Date(shift.shiftTime.start).toLocaleString()} has been confirmed.`,
-                  [{ text: "OK" }]
+                  'Shift Confirmed',
+                  `Shift starting at ${new Date(
+                    shift.shiftTime.start,
+                  ).toLocaleString()} has been confirmed.`,
+                  [{text: 'OK'}],
                 );
               } else {
                 console.error('Erro ao confirmar turno:', confirmResponse.data);
               }
             } catch (confirmError) {
-              console.error('Erro ao confirmar turno:', confirmError.response ? confirmError.response.data : confirmError.message);
+              console.error(
+                'Erro ao confirmar turno:',
+                confirmError.response
+                  ? confirmError.response.data
+                  : confirmError.message,
+              );
             }
           }
         } catch (error) {
-          console.error('Erro ao buscar ou confirmar turnos:', error.response ? error.response.data : error.message);
+          console.error(
+            'Erro ao buscar ou confirmar turnos:',
+            error.response ? error.response.data : error.message,
+          );
         }
       }, 30000); // Verificar a cada 30 segundos
     }
@@ -151,12 +189,12 @@ const HomeScreen = ({ navigation }) => {
 
   const timeOptions = generateTimeOptions();
 
-  const convertMillisecondsToDayAndHour = (milliseconds) => {
+  const convertMillisecondsToDayAndHour = milliseconds => {
     const date = new Date(milliseconds);
-    const day = date.toLocaleString('en-GB', { weekday: 'long' });
+    const day = date.toLocaleString('en-GB', {weekday: 'long'});
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return { day, time: `${hours}:${minutes}` };
+    return {day, time: `${hours}:${minutes}`};
   };
 
   const isTimeInRange = (time, start, end) => {
@@ -168,7 +206,10 @@ const HomeScreen = ({ navigation }) => {
     const startTotalMinutes = startHours * 60 + startMinutes;
     const endTotalMinutes = endHours * 60 + endMinutes;
 
-    return shiftTotalMinutes >= startTotalMinutes && shiftTotalMinutes <= endTotalMinutes;
+    return (
+      shiftTotalMinutes >= startTotalMinutes &&
+      shiftTotalMinutes <= endTotalMinutes
+    );
   };
 
   const handleAppStorePress = () => {
@@ -179,15 +220,14 @@ const HomeScreen = ({ navigation }) => {
     Linking.openURL('https://play.google.com');
   };
 
-  const handleLanguageChange = (language) => {
+  const handleLanguageChange = language => {
     i18n.changeLanguage(language);
     navigation.setOptions({
       headerRight: () => (
         <Button
           onPress={handleToggleBot}
           status={botActive ? 'danger' : 'success'}
-          style={styles.headerButton}
-        >
+          style={styles.headerButton}>
           {botActive ? t('stopBot') : t('startBot')}
         </Button>
       ),
@@ -195,59 +235,153 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <Layout style={[styles.container, theme === 'dark' ? styles.darkContainer : styles.lightContainer]}>
+    <Layout
+      style={[
+        styles.container,
+        theme === 'dark' ? styles.darkContainer : styles.lightContainer,
+      ]}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text category='h1' style={[styles.header, theme === 'dark' ? styles.darkText : styles.lightText]}>{`${t('hello')}, ${user.name}`}</Text>
-        <Text category='h6' style={[styles.trialText, theme === 'dark' ? styles.darkText : styles.lightText]}>
-          {t('trialInfo', { trialEnd: moment(trialEnd).format('LL') })}
+        <Text
+          category="h1"
+          style={[
+            styles.header,
+            theme === 'dark' ? styles.darkText : styles.lightText,
+          ]}>{`${t('hello')}, ${user.name}`}</Text>
+        <Text
+          category="h6"
+          style={[
+            styles.trialText,
+            theme === 'dark' ? styles.darkText : styles.lightText,
+          ]}>
+          {t('trialInfo', {trialEnd: moment(trialEnd).format('LL')})}
         </Text>
-        <Layout style={[styles.flagContainer, theme === 'dark' ? styles.darkContainer : styles.lightContainer]}>
+        <Layout
+          style={[
+            styles.flagContainer,
+            theme === 'dark' ? styles.darkContainer : styles.lightContainer,
+          ]}>
           <TouchableOpacity onPress={() => handleLanguageChange('en')}>
-            <Image source={require('../img/uk2.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/uk2.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleLanguageChange('pt')}>
-            <Image source={require('../img/br.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/br.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleLanguageChange('es')}>
-            <Image source={require('../img/es2.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/es2.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleLanguageChange('it')}>
-            <Image source={require('../img/italian2.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/italian2.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleLanguageChange('hi')}>
-            <Image source={require('../img/in2.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/in2.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleLanguageChange('ar')}>
-            <Image source={require('../img/arab.png')} style={[styles.flag, { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' }]} />
+            <Image
+              source={require('../img/arab.png')}
+              style={[
+                styles.flag,
+                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+              ]}
+            />
           </TouchableOpacity>
         </Layout>
-        <Card style={[styles.card, theme === 'dark' ? styles.darkCard : styles.lightCard]}>
-          <Text category='h5' style={theme === 'dark' ? styles.darkText : styles.lightText}>{t('instructions')}</Text>
-          {t('steps', { returnObjects: true }).map((step, index) => (
-            <Text key={index} style={[styles.text, theme === 'dark' ? styles.darkText : styles.lightText]}>{index + 1}. {step}</Text>
+        <Card
+          style={[
+            styles.card,
+            theme === 'dark' ? styles.darkCard : styles.lightCard,
+          ]}>
+          <Text
+            category="h5"
+            style={theme === 'dark' ? styles.darkText : styles.lightText}>
+            {t('instructions')}
+          </Text>
+          {t('steps', {returnObjects: true}).map((step, index) => (
+            <Text
+              key={index}
+              style={[
+                styles.text,
+                theme === 'dark' ? styles.darkText : styles.lightText,
+              ]}>
+              {index + 1}. {step}
+            </Text>
           ))}
         </Card>
-        <Card style={[styles.card, theme === 'dark' ? styles.darkCard : styles.lightCard]}>
+        <Card
+          style={[
+            styles.card,
+            theme === 'dark' ? styles.darkCard : styles.lightCard,
+          ]}>
           <Toggle
             checked={boosterActive}
             onChange={setBoosterActive}
             style={styles.toggle}
-            status={boosterActive ? 'success' : 'basic'}
-          >
-            <Text style={{ color: 'orange' }}>
-              {boosterActive ? "Disable Booster Orders" : "Enable Booster Orders"}
+            status={boosterActive ? 'success' : 'basic'}>
+            <Text style={{color: 'orange'}}>
+              {boosterActive
+                ? 'Disable Booster Orders'
+                : 'Enable Booster Orders'}
             </Text>
           </Toggle>
-          <Text style={[styles.feedbackText, theme === 'dark' ? styles.darkText : styles.lightText]}>
+          <Text
+            style={[
+              styles.feedbackText,
+              theme === 'dark' ? styles.darkText : styles.lightText,
+            ]}>
             {t('feedback')}
           </Text>
-          <Text style={[styles.feedbackText, theme === 'dark' ? styles.darkText : styles.lightText]}>
+          <Text
+            style={[
+              styles.feedbackText,
+              theme === 'dark' ? styles.darkText : styles.lightText,
+            ]}>
             {t('boosterExplanation')}
           </Text>
         </Card>
-        <Layout style={[styles.imageContainer, theme === 'dark' ? styles.darkContainer : styles.lightContainer]}>
-          <Image source={require('../img/appstore.png')} style={styles.image} onPress={handleAppStorePress} />
-          <Image source={require('../img/googleplay.png')} style={styles.image} onPress={handleGooglePlayPress} />
+        <Layout
+          style={[
+            styles.imageContainer,
+            theme === 'dark' ? styles.darkContainer : styles.lightContainer,
+          ]}>
+          <Image
+            source={require('../img/appstore.png')}
+            style={styles.image}
+            onPress={handleAppStorePress}
+          />
+          <Image
+            source={require('../img/googleplay.png')}
+            style={styles.image}
+            onPress={handleGooglePlayPress}
+          />
         </Layout>
         <Text style={styles.footer}>{t('footer')}</Text>
       </ScrollView>

@@ -1,30 +1,32 @@
 import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { Formik } from 'formik';
+import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {Formik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 
-const VerifyPhoneScreen = ({ navigation }) => {
+const VerifyPhoneScreen = ({navigation}) => {
   return (
     <Formik
-      initialValues={{ phone: '', verificationCode: '' }}
+      initialValues={{phone: '', verificationCode: ''}}
       validationSchema={Yup.object({
         phone: Yup.string().required('Required'),
         verificationCode: Yup.string().required('Required'),
       })}
-      onSubmit={async (values, { setSubmitting }) => {
+      onSubmit={async (values, {setSubmitting}) => {
         try {
           await axios.post('http://localhost:3000/auth/verify-phone', values);
           console.log('Phone verified successfully');
           navigation.navigate('Login');
         } catch (error) {
-          console.error('Error verifying phone:', error.response ? error.response.data : error.message);
+          console.error(
+            'Error verifying phone:',
+            error.response ? error.response.data : error.message,
+          );
         } finally {
           setSubmitting(false);
         }
-      }}
-    >
-      {({ handleChange, handleBlur, handleSubmit, values }) => (
+      }}>
+      {({handleChange, handleBlur, handleSubmit, values}) => (
         <View style={styles.container}>
           <TextInput
             onChangeText={handleChange('phone')}
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16
+    padding: 16,
   },
   input: {
     width: '100%',
@@ -60,8 +62,8 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 12,
-    paddingLeft: 8
-  }
+    paddingLeft: 8,
+  },
 });
 
 export default VerifyPhoneScreen;
