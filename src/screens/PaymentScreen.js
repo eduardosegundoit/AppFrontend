@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, {useEffect} from 'react';
 import {StyleSheet, Linking} from 'react-native';
 import {Layout, Text, Card, Button} from '@ui-kitten/components';

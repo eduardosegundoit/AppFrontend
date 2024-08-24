@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import axios from 'axios';
 
 export const TOGGLE_BOT = 'TOGGLE_BOT';
@@ -50,7 +51,7 @@ export const updateUserPassword = password => ({
 export const loginUser = (email, password) => {
   return async dispatch => {
     try {
-      const response = await axios.post('http://localhost:3000/auth/login', {
+      const response = await axios.post('https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/login', {
         email,
         password,
       });
@@ -89,7 +90,7 @@ export const connectJustEat = (email, password, userId) => {
   return async dispatch => {
     try {
       const justEatResponse = await axios.post(
-        'http://localhost:3000/justEat/connect',
+        'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justEat/connect',
         {
           justEatEmail: email,
           justEatPassword: password,
@@ -125,7 +126,7 @@ export const createCheckoutSession = plan => {
       }
 
       const response = await axios.post(
-        'http://localhost:3000/payment/create-checkout-session',
+        'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/payment/create-checkout-session',
         {
           priceId: plan,
           userId: user.userId,
@@ -156,7 +157,7 @@ export const checkSubscriptionStatus = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:3000/subscription/status',
+        'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/subscription/status',
         {
           userId: user.Id,
         },
@@ -186,7 +187,7 @@ export const updateUserEmailAsync = email => async (dispatch, getState) => {
 
   try {
     const response = await axios.put(
-      'http://localhost:3000/auth/update-email',
+      'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/update-email',
       {userId: user.userId, newEmail: email},
     );
     if (response.status === 200) {
@@ -200,24 +201,23 @@ export const updateUserEmailAsync = email => async (dispatch, getState) => {
   }
 };
 
-export const updateUserPasswordAsync =
-  password => async (dispatch, getState) => {
-    const {user} = getState();
+export const updateUserPasswordAsync = password => async (dispatch, getState) => {
+  const {user} = getState();
 
-    if (!user.userId) {
-      console.error('User ID is not available');
-      return;
-    }
+  if (!user.userId) {
+    console.error('User ID is not available');
+    return;
+  }
 
-    try {
-      const response = await axios.put(
-        'http://localhost:3000/auth/update-password',
-        {userId: user.userId, newPassword: password},
-      );
-      if (response.status === 200) {
-        dispatch(updateUserPassword(password));
-      }
-    } catch (error) {
-      console.error('Error updating password:', error.message);
+  try {
+    const response = await axios.put(
+      'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/update-password',
+      {userId: user.userId, newPassword: password},
+    );
+    if (response.status === 200) {
+      dispatch(updateUserPassword(password));
     }
-  };
+  } catch (error) {
+    console.error('Error updating password:', error.message);
+  }
+};

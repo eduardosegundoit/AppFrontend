@@ -22,7 +22,7 @@ const LoginScreen = ({navigation}) => {
       onSubmit={async (values, {setSubmitting}) => {
         try {
           const response = await axios.post(
-            'http://localhost:3000/auth/login',
+            'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/login',
             values,
           );
           const userData = {

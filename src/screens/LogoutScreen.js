@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 // screens/LogoutScreen.js
 import React, {useEffect} from 'react';
 import {useDispatch} from 'react-redux';

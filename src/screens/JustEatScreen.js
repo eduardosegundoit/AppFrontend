@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Formik} from 'formik';
@@ -25,7 +27,7 @@ const ConnectJustEatScreen = ({navigation}) => {
         try {
           // Primeira chamada para conectar à Just Eat
           const justEatResponse = await axios.post(
-            'http://localhost:3000/justEat/connect',
+            'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justEat/connect',
             {
               justEatEmail: values.justEatEmail,
               justEatPassword: values.justEatPassword,
@@ -43,7 +45,7 @@ const ConnectJustEatScreen = ({navigation}) => {
 
             // Atualizar usuário com credenciais do Just Eat
             const updatedUserResponse = await axios.post(
-              'http://localhost:3000/auth/update-just-eat-credentials',
+              'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/update-just-eat-credentials',
               {
                 userId: user.userId,
                 justEatEmail: values.justEatEmail,

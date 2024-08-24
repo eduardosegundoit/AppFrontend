@@ -46,7 +46,7 @@ const RegisterScreen = () => {
     try {
       console.log(`Requesting verification code for phone: ${phone}`);
       const response = await axios.post(
-        'http://localhost:3000/auth/send-verification-code',
+        'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/send-verification-code',
         {
           phone: phone.startsWith('+') ? phone : `+${phone}`,
         },
@@ -79,7 +79,7 @@ const RegisterScreen = () => {
     try {
       console.log(`Verifying code: ${verificationCode} for phone: ${phone}`);
       const response = await axios.post(
-        'http://localhost:3000/auth/verify-code',
+        'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/verify-code',
         {
           phone: phone.startsWith('+') ? phone : `+${phone}`,
           providedCode: verificationCode,
@@ -117,7 +117,7 @@ const RegisterScreen = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/auth/register', {
+      const response = await axios.post('https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/register', {
         name,
         email,
         password,

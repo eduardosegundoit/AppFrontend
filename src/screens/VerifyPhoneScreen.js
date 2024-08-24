@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React from 'react';
 import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
 import {Formik} from 'formik';

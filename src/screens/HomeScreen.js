@@ -1,3 +1,9 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
@@ -32,7 +38,7 @@ const HomeScreen = ({navigation}) => {
   const handleToggleBot = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3000/bot/${botActive ? 'stop' : 'start'}`,
+        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/bot/${botActive ? 'stop' : 'start'}`,
         {
           userId: user._id,
         },
@@ -102,7 +108,7 @@ const HomeScreen = ({navigation}) => {
           }
 
           const response = await axios.post(
-            `http://localhost:3000/justeat/fetchShifts/${justEatData.id}`,
+            `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/fetchShifts/${justEatData.id}`,
             {
               userToken: justEatData.token,
             },
@@ -136,7 +142,7 @@ const HomeScreen = ({navigation}) => {
           for (const shift of filteredShifts) {
             try {
               const confirmResponse = await axios.post(
-                `http://localhost:3000/justeat/confirmShift/${justEatData.id}/${shift.id}`,
+                `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/confirmShift/${justEatData.id}/${shift.id}`,
                 {
                   userToken: justEatData.token,
                 },
