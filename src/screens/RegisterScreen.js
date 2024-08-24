@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {Alert, StyleSheet, View} from 'react-native';
 import axios from 'axios';
@@ -126,6 +128,7 @@ const RegisterScreen = () => {
       console.log(response.data.message);
       if (response.data.message === 'User registered successfully') {
         console.log('User registered successfully');
+        // Exibe o alerta e redireciona após o usuário pressionar "OK"
         Alert.alert('Success', 'User registered successfully.', [
           {text: 'OK', onPress: () => navigation.navigate('Login')},
         ]);
