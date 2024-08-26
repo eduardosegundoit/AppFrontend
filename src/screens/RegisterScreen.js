@@ -2,15 +2,14 @@
 /* eslint-disable quotes */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
-import React, {useState, useEffect} from 'react';
-import {Alert, StyleSheet, View, Platform} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Alert, StyleSheet, View, Platform } from 'react-native';
 import axios from 'axios';
-import {useNavigation} from '@react-navigation/native';
-import {Layout, Input, Button, Text} from '@ui-kitten/components';
-import {useSelector} from 'react-redux';
-import {toast, ToastContainer} from 'react-toastify';
+import { useNavigation } from '@react-navigation/native';
+import { Layout, Input, Button, Text } from '@ui-kitten/components';
+import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useNavigate} from 'react-router-dom';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -21,8 +20,7 @@ const RegisterScreen = () => {
   const [timer, setTimer] = useState(0);
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [sendCodeStatus, setSendCodeStatus] = useState(null);
-  const navigation = useNavigation();
-  const navigate = useNavigate(); // React Router hook para navegação na web
+  const navigation = useNavigation(); // Navegação do React Navigation
   const theme = useSelector(state => state.theme);
 
   useEffect(() => {
@@ -49,7 +47,6 @@ const RegisterScreen = () => {
     }
 
     try {
-      console.log(`Requesting verification code for phone: ${phone}`);
       const response = await axios.post(
         'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/send-verification-code',
         {
@@ -58,20 +55,14 @@ const RegisterScreen = () => {
       );
 
       if (response.data.message === 'Verification code sent') {
-        console.log('Verification code sent successfully');
         setSendCodeStatus('success');
         setTimer(60); // 1 minuto
         showAlert('Success', 'Verification code sent to your phone.');
       } else {
-        console.error('Error:', response.data.message);
         setSendCodeStatus('error');
         showAlert('Error', response.data.message);
       }
     } catch (error) {
-      console.error(
-        'Error sending verification code:',
-        error.response ? error.response.data.error : error.message,
-      );
       setSendCodeStatus('error');
       showAlert('Error', error.response ? error.response.data.error : error.message);
     }
@@ -79,7 +70,6 @@ const RegisterScreen = () => {
 
   const handleVerifyCode = async () => {
     try {
-      console.log(`Verifying code: ${verificationCode} for phone: ${phone}`);
       const response = await axios.post(
         'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/verify-code',
         {
@@ -88,19 +78,13 @@ const RegisterScreen = () => {
         },
       );
       if (response.data.message === 'Verification code is correct') {
-        console.log('Verification code is correct');
         setVerificationStatus('success');
         showAlert('Success', 'Verification code is correct.');
       } else {
-        console.error('Invalid verification code');
         setVerificationStatus('error');
         showAlert('Error', 'Invalid verification code.');
       }
     } catch (error) {
-      console.error(
-        'Error verifying code:',
-        error.response ? error.response.data.error : error.message,
-      );
       setVerificationStatus('error');
       showAlert('Error', error.response ? error.response.data.error : error.message);
     }
@@ -119,29 +103,26 @@ const RegisterScreen = () => {
         password,
         phone: phone.startsWith('+') ? phone : `+${phone}`,
       });
-      console.log(response.data.message);
+
       if (response.data.message === 'User registered successfully') {
-        console.log('User registered successfully');
-        showAlert('Success', 'User registered successfully.', () => navigate('Login'));
-      } else if (response.data.message === 'User already exists') {
-        console.error('User already exists');
-        showAlert('Error', 'User already exists.');
+        showAlert('Success', 'User registered successfully.', () => {
+          if (Platform.OS === 'web') {
+            window.location.href = '/login'; // Redireciona para a página de login na web
+          } else {
+            navigation.navigate('Login'); // Usa navegação do React Navigation em dispositivos móveis
+          }
+        });
       } else {
-        console.error('Failed to register user');
-        showAlert('Error', 'Failed to register user.');
+        showAlert('Error', response.data.message);
       }
     } catch (error) {
-      console.error(
-        'Error registering user:',
-        error.response ? error.response.data.error : error.message,
-      );
       showAlert('Error', error.response ? error.response.data.error : error.message);
     }
   };
 
   const showAlert = (title, message, onClose = null) => {
     if (Platform.OS === 'web') {
-      toast(title === 'Success' ? 'success' : 'error', {
+      toast[title === 'Success' ? 'success' : 'error'](message, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -152,7 +133,7 @@ const RegisterScreen = () => {
         onClose: onClose
       });
     } else {
-      Alert.alert(title, message, onClose ? [{text: 'OK', onPress: onClose}] : undefined);
+      Alert.alert(title, message, onClose ? [{ text: 'OK', onPress: onClose }] : undefined);
     }
   };
 
@@ -162,7 +143,7 @@ const RegisterScreen = () => {
         styles.container,
         theme === 'dark' ? styles.darkContainer : styles.lightContainer,
       ]}>
-      <ToastContainer />
+      {Platform.OS === 'web' && <ToastContainer />}
       <Input
         label="Name"
         value={name}
@@ -171,7 +152,7 @@ const RegisterScreen = () => {
           styles.input,
           theme === 'dark' ? styles.darkInput : styles.lightInput,
         ]}
-        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
+        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
       />
       <Input
         label="Email"
@@ -181,7 +162,7 @@ const RegisterScreen = () => {
           styles.input,
           theme === 'dark' ? styles.darkInput : styles.lightInput,
         ]}
-        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
+        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
       />
       <Input
         label="Password"
@@ -192,7 +173,7 @@ const RegisterScreen = () => {
           styles.input,
           theme === 'dark' ? styles.darkInput : styles.lightInput,
         ]}
-        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
+        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
       />
       <Input
         label="Phone (+4401234567891)"
@@ -203,7 +184,7 @@ const RegisterScreen = () => {
           styles.input,
           theme === 'dark' ? styles.darkInput : styles.lightInput,
         ]}
-        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
+        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
       />
       <Button
         onPress={handleSendVerificationCode}
@@ -213,8 +194,8 @@ const RegisterScreen = () => {
           sendCodeStatus === 'success'
             ? styles.successButton
             : sendCodeStatus === 'error'
-            ? styles.errorButton
-            : null,
+              ? styles.errorButton
+              : null,
         ]}>
         Send Verification Code
       </Button>
@@ -227,7 +208,7 @@ const RegisterScreen = () => {
           styles.input,
           theme === 'dark' ? styles.darkInput : styles.lightInput,
         ]}
-        textStyle={{color: theme === 'dark' ? '#FFFFFF' : '#222B45'}}
+        textStyle={{ color: theme === 'dark' ? '#FFFFFF' : '#222B45' }}
       />
       <Button
         onPress={handleVerifyCode}
@@ -236,8 +217,8 @@ const RegisterScreen = () => {
           verificationStatus === 'success'
             ? styles.successButton
             : verificationStatus === 'error'
-            ? styles.errorButton
-            : null,
+              ? styles.errorButton
+              : null,
         ]}>
         Verify Code
       </Button>
@@ -255,7 +236,15 @@ const RegisterScreen = () => {
           ]}>
           Already registered?
         </Text>
-        <Button onPress={() => navigation.navigate('Login')} appearance="ghost">
+        <Button
+          onPress={() => {
+            if (Platform.OS === 'web') {
+              window.location.href = '/login'; // Redireciona para a página de login na web
+            } else {
+              navigation.navigate('Login'); // Usa navegação do React Navigation em dispositivos móveis
+            }
+          }}
+          appearance="ghost">
           Login
         </Button>
       </View>
