@@ -1,11 +1,16 @@
+/* eslint-disable comma-dangle */
+/* eslint-disable quotes */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {Alert, StyleSheet, View} from 'react-native';
+import {Alert, StyleSheet, View, Platform} from 'react-native';
 import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
 import {Layout, Input, Button, Text} from '@ui-kitten/components';
 import {useSelector} from 'react-redux';
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from 'react-router-dom';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -17,6 +22,7 @@ const RegisterScreen = () => {
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [sendCodeStatus, setSendCodeStatus] = useState(null);
   const navigation = useNavigation();
+  const navigate = useNavigate(); // React Router hook para navegação na web
   const theme = useSelector(state => state.theme);
 
   useEffect(() => {
@@ -38,10 +44,7 @@ const RegisterScreen = () => {
 
   const handleSendVerificationCode = async () => {
     if (timer > 0) {
-      Alert.alert(
-        'Wait',
-        `Please wait ${timer} seconds before requesting another code.`,
-      );
+      showAlert('Wait', `Please wait ${timer} seconds before requesting another code.`);
       return;
     }
 
@@ -58,11 +61,11 @@ const RegisterScreen = () => {
         console.log('Verification code sent successfully');
         setSendCodeStatus('success');
         setTimer(60); // 1 minuto
-        Alert.alert('Success', 'Verification code sent to your phone.');
+        showAlert('Success', 'Verification code sent to your phone.');
       } else {
         console.error('Error:', response.data.message);
         setSendCodeStatus('error');
-        Alert.alert('Error', response.data.message);
+        showAlert('Error', response.data.message);
       }
     } catch (error) {
       console.error(
@@ -70,10 +73,7 @@ const RegisterScreen = () => {
         error.response ? error.response.data.error : error.message,
       );
       setSendCodeStatus('error');
-      Alert.alert(
-        'Error',
-        error.response ? error.response.data.error : error.message,
-      );
+      showAlert('Error', error.response ? error.response.data.error : error.message);
     }
   };
 
@@ -90,11 +90,11 @@ const RegisterScreen = () => {
       if (response.data.message === 'Verification code is correct') {
         console.log('Verification code is correct');
         setVerificationStatus('success');
-        Alert.alert('Success', 'Verification code is correct.');
+        showAlert('Success', 'Verification code is correct.');
       } else {
         console.error('Invalid verification code');
         setVerificationStatus('error');
-        Alert.alert('Error', 'Invalid verification code.');
+        showAlert('Error', 'Invalid verification code.');
       }
     } catch (error) {
       console.error(
@@ -102,19 +102,13 @@ const RegisterScreen = () => {
         error.response ? error.response.data.error : error.message,
       );
       setVerificationStatus('error');
-      Alert.alert(
-        'Error',
-        error.response ? error.response.data.error : error.message,
-      );
+      showAlert('Error', error.response ? error.response.data.error : error.message);
     }
   };
 
   const handleRegister = async () => {
     if (verificationStatus !== 'success') {
-      Alert.alert(
-        'Error',
-        'Please verify your phone number before registering.',
-      );
+      showAlert('Error', 'Please verify your phone number before registering.');
       return;
     }
 
@@ -128,26 +122,37 @@ const RegisterScreen = () => {
       console.log(response.data.message);
       if (response.data.message === 'User registered successfully') {
         console.log('User registered successfully');
-        // Exibe o alerta e redireciona após o usuário pressionar "OK"
-        Alert.alert('Success', 'User registered successfully.', [
-          {text: 'OK', onPress: () => navigation.navigate('Login')},
-        ]);
+        showAlert('Success', 'User registered successfully.', () => navigate('Login'));
       } else if (response.data.message === 'User already exists') {
         console.error('User already exists');
-        Alert.alert('Error', 'User already exists.');
+        showAlert('Error', 'User already exists.');
       } else {
         console.error('Failed to register user');
-        Alert.alert('Error', 'Failed to register user.');
+        showAlert('Error', 'Failed to register user.');
       }
     } catch (error) {
       console.error(
         'Error registering user:',
         error.response ? error.response.data.error : error.message,
       );
-      Alert.alert(
-        'Error',
-        error.response ? error.response.data.error : error.message,
-      );
+      showAlert('Error', error.response ? error.response.data.error : error.message);
+    }
+  };
+
+  const showAlert = (title, message, onClose = null) => {
+    if (Platform.OS === 'web') {
+      toast(title === 'Success' ? 'success' : 'error', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: onClose
+      });
+    } else {
+      Alert.alert(title, message, onClose ? [{text: 'OK', onPress: onClose}] : undefined);
     }
   };
 
@@ -157,6 +162,7 @@ const RegisterScreen = () => {
         styles.container,
         theme === 'dark' ? styles.darkContainer : styles.lightContainer,
       ]}>
+      <ToastContainer />
       <Input
         label="Name"
         value={name}
