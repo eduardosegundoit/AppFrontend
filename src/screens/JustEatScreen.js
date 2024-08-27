@@ -1,18 +1,39 @@
+/* eslint-disable no-undef */
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, Platform} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import {setJustEatData, setUser} from '../redux/actions';
 import {Layout, Input, Button, Card, Text, Icon} from '@ui-kitten/components';
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ConnectJustEatScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const user = useSelector(state => state.user);
   const theme = useSelector(state => state.theme);
+
+  const showAlert = (title, message) => {
+    if (Platform.OS === 'web') {
+      toast[title === 'Success' ? 'success' : 'error'](message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      Alert.alert(title, message);
+    }
+  };
 
   return (
     <Formik
@@ -25,11 +46,10 @@ const ConnectJustEatScreen = ({navigation}) => {
       })}
       onSubmit={async (values, {setSubmitting}) => {
         try {
-          // Primeira chamada para conectar à Just Eat
           const justEatResponse = await axios.post(
             'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justEat/connect',
             {
-              justEatEmail: values.justEatEmail,
+              justEatEmail: values.justEatEmail.toLowerCase(),
               justEatPassword: values.justEatPassword,
               userId: user.userId,
             },
@@ -43,12 +63,11 @@ const ConnectJustEatScreen = ({navigation}) => {
 
             dispatch(setJustEatData(justEatData));
 
-            // Atualizar usuário com credenciais do Just Eat
             const updatedUserResponse = await axios.post(
               'https://lightinggrabber-2ebb31cb9e79.herokuapp.com/auth/update-just-eat-credentials',
               {
                 userId: user.userId,
-                justEatEmail: values.justEatEmail,
+                justEatEmail: values.justEatEmail.toLowerCase(),
                 justEatPassword: values.justEatPassword,
               },
             );
@@ -57,18 +76,15 @@ const ConnectJustEatScreen = ({navigation}) => {
               dispatch(setUser(updatedUserResponse.data));
             }
 
+            showAlert('Success', 'Connected to Just Eat successfully.');
             navigation.navigate('Home');
           } else {
-            console.error(
-              'Falha na conexão com Just Eat:',
-              justEatResponse.data,
-            );
+            showAlert('Error', 'Failed to connect to Just Eat.');
+            console.error('Falha na conexão com Just Eat:', justEatResponse.data);
           }
         } catch (error) {
-          console.error(
-            'Erro ao conectar com Just Eat:',
-            error.response ? error.response.data : error.message,
-          );
+          showAlert('Error', error.response ? error.response.data : error.message);
+          console.error('Erro ao conectar com Just Eat:', error.response ? error.response.data : error.message);
         } finally {
           setSubmitting(false);
         }
@@ -80,6 +96,7 @@ const ConnectJustEatScreen = ({navigation}) => {
             theme === 'dark' ? styles.darkContainer : styles.lightContainer,
           ]}
           level="1">
+          {Platform.OS === 'web' && <ToastContainer />}
           <Card
             style={[
               styles.warningCard,
