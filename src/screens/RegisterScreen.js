@@ -107,7 +107,7 @@ const RegisterScreen = () => {
       if (response.data.message === 'User registered successfully') {
         showAlert('Success', 'User registered successfully.', () => {
           if (Platform.OS === 'web') {
-            window.location.href = '/login'; // Redireciona para a página de login na web
+            navigation.navigate('Login'); // Redireciona para a página de login na web
           } else {
             navigation.navigate('Login'); // Usa navegação do React Navigation em dispositivos móveis
           }
@@ -239,7 +239,7 @@ const RegisterScreen = () => {
         <Button
           onPress={() => {
             if (Platform.OS === 'web') {
-              window.location.href = '/login'; // Redireciona para a página de login na web
+              navigation.navigate('Login'); // Redireciona para a página de login na web
             } else {
               navigation.navigate('Login'); // Usa navegação do React Navigation em dispositivos móveis
             }
