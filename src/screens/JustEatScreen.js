@@ -1,18 +1,24 @@
-/* eslint-disable no-undef */
-/* eslint-disable quotes */
-/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/prop-types */
 import React from 'react';
-import {StyleSheet, Platform} from 'react-native';
+import {StyleSheet, Platform, Alert} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import {setJustEatData, setUser} from '../redux/actions';
 import {Layout, Input, Button, Card, Text, Icon} from '@ui-kitten/components';
-import {toast, ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+// Condicional para importar toast e ToastContainer
+let toast;
+let ToastContainer;
+
+if (Platform.OS === 'web') {
+  const reactToastify = require('react-toastify');
+  toast = reactToastify.toast;
+  ToastContainer = reactToastify.ToastContainer;
+  require('react-toastify/dist/ReactToastify.css');
+}
 
 const ConnectJustEatScreen = ({navigation}) => {
   const dispatch = useDispatch();
@@ -22,7 +28,7 @@ const ConnectJustEatScreen = ({navigation}) => {
   const showAlert = (title, message) => {
     if (Platform.OS === 'web') {
       toast[title === 'Success' ? 'success' : 'error'](message, {
-        position: "top-right",
+        position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
@@ -80,11 +86,20 @@ const ConnectJustEatScreen = ({navigation}) => {
             navigation.navigate('Home');
           } else {
             showAlert('Error', 'Failed to connect to Just Eat.');
-            console.error('Falha na conexão com Just Eat:', justEatResponse.data);
+            console.error(
+              'Falha na conexão com Just Eat:',
+              justEatResponse.data,
+            );
           }
         } catch (error) {
-          showAlert('Error', error.response ? error.response.data : error.message);
-          console.error('Erro ao conectar com Just Eat:', error.response ? error.response.data : error.message);
+          showAlert(
+            'Error',
+            error.response ? error.response.data : error.message,
+          );
+          console.error(
+            'Erro ao conectar com Just Eat:',
+            error.response ? error.response.data : error.message,
+          );
         } finally {
           setSubmitting(false);
         }
@@ -96,7 +111,7 @@ const ConnectJustEatScreen = ({navigation}) => {
             theme === 'dark' ? styles.darkContainer : styles.lightContainer,
           ]}
           level="1">
-          {Platform.OS === 'web' && <ToastContainer />}
+          {Platform.OS === 'web' && ToastContainer && <ToastContainer />}
           <Card
             style={[
               styles.warningCard,

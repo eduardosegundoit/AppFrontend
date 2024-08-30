@@ -7,6 +7,7 @@ import {
   TOGGLE_THEME,
   UPDATE_USER_EMAIL,
   UPDATE_USER_PASSWORD,
+  LOGOUT,
 } from './actions';
 
 const initialState = {
@@ -36,10 +37,13 @@ const rootReducer = (state = initialState, action) => {
   switch (action.type) {
     case TOGGLE_BOT:
       return {...state, botEnabled: !state.botEnabled};
+
     case SET_FILTERS:
       return {...state, filters: action.payload};
+
     case SET_JUST_EAT_DATA:
       return {...state, justEatData: action.payload};
+
     case SET_USER:
       return {
         ...state,
@@ -48,13 +52,16 @@ const rootReducer = (state = initialState, action) => {
           ...action.payload,
         },
       };
+
     case SET_SUBSCRIPTION_STATUS:
       return {
         ...state,
         user: {...state.user, subscriptionStatus: action.payload},
       };
+
     case TOGGLE_THEME:
       return {...state, theme: state.theme === 'light' ? 'dark' : 'light'};
+
     case UPDATE_USER_EMAIL:
       return {
         ...state,
@@ -63,6 +70,7 @@ const rootReducer = (state = initialState, action) => {
           email: action.payload,
         },
       };
+
     case UPDATE_USER_PASSWORD:
       return {
         ...state,
@@ -71,6 +79,13 @@ const rootReducer = (state = initialState, action) => {
           password: action.payload,
         },
       };
+
+    case LOGOUT:
+      return {
+        ...initialState,
+        filters: state.filters,
+      };
+
     default:
       return state;
   }

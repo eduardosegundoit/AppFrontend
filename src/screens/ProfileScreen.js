@@ -8,6 +8,7 @@ import {
   Linking,
   Alert,
   View,
+  Platform,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {
@@ -67,9 +68,15 @@ const ProfileScreen = ({navigation}) => {
   }, [dispatch]);
 
   const handleSubscriptionManage = () => {
-    Linking.openURL(
-      'https://billing.stripe.com/p/login/14kbKMcqc6DX000bII',
-    ).catch(err => console.error("Couldn't load page", err));
+    const url = 'https://billing.stripe.com/p/login/14kbKMcqc6DX000bII';
+    if (Platform.OS === 'web') {
+      window.open(url, '_blank');
+    } else {
+      Linking.openURL(url).catch(err => {
+        console.error("Couldn't load page", err);
+        Alert.alert(t('error'), t('cannotOpenLink'), [{text: 'OK'}]);
+      });
+    }
   };
 
   const handleUpdateEmail = () => {
@@ -86,12 +93,18 @@ const ProfileScreen = ({navigation}) => {
     try {
       const paymentUrl = await dispatch(createCheckoutSession(priceId));
       if (paymentUrl) {
-        Linking.openURL(paymentUrl).catch(err =>
-          console.error("Couldn't load page", err),
-        );
+        if (Platform.OS === 'web') {
+          window.open(paymentUrl, '_blank');
+        } else {
+          Linking.openURL(paymentUrl).catch(err => {
+            console.error("Couldn't load page", err);
+            Alert.alert(t('error'), t('cannotOpenLink'), [{text: 'OK'}]);
+          });
+        }
       }
     } catch (error) {
       console.error('Error during payment process:', error);
+      Alert.alert(t('error'), t('paymentError'), [{text: 'OK'}]);
     }
   };
 

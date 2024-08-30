@@ -1,6 +1,6 @@
-<?xml version="1.0.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0.0">
+<plist version="1.0">
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
@@ -32,6 +32,29 @@
         <true/>
     </dict>
     <key>CFBundleIconName</key>
-    <string>AppIcon</string> 
+    <string>AppIcon</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>processing</string>
+        <string>remote-notification</string>
+    </array>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <!-- Adicione um identificador para o background fetch -->
+        <string>com.yourcompany.yourapp.refresh</string>
+    </array>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>armv7</string>
+    </array>
+    <key>NSUserTrackingUsageDescription</key>
+    <string>Este aplicativo usa sua localização para fornecer recursos e notificações em segundo plano.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Este aplicativo requer acesso à sua localização o tempo todo para oferecer suporte a recursos de rastreamento em segundo plano.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Este aplicativo requer acesso à sua localização o tempo todo para oferecer suporte a recursos de rastreamento em segundo plano.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Este aplicativo usa sua localização enquanto está em uso para melhorar a experiência do usuário.</string>
 </dict>
 </plist>

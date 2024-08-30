@@ -1,10 +1,9 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   StyleSheet,
   Alert,
@@ -12,6 +11,8 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Platform,
+  View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import axios from 'axios';
@@ -20,6 +21,7 @@ import {useTranslation} from 'react-i18next';
 import moment from 'moment';
 import {toggleBot} from '../redux/actions';
 import '../i18n';
+import BackgroundFetch from 'react-native-background-fetch';
 
 const HomeScreen = ({navigation}) => {
   const {t, i18n} = useTranslation();
@@ -34,152 +36,211 @@ const HomeScreen = ({navigation}) => {
   const botActive = useSelector(state => state.botEnabled);
   const dispatch = useDispatch();
   const [boosterActive, setBoosterActive] = useState(false);
+  const intervalId = useRef(null);
+
+  const showAlert = (title, message) => {
+    console.log(
+      `showAlert called with title: ${title} and message: ${message}`,
+    );
+    Alert.alert(title, message, [{text: 'OK'}]);
+  };
 
   const handleToggleBot = async () => {
     try {
       const response = await axios.post(
-        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/bot/${botActive ? 'stop' : 'start'}`,
+        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/bot/${
+          botActive ? 'stop' : 'start'
+        }`,
         {
           userId: user._id,
         },
       );
 
       if (response.status === 200) {
-        Alert.alert(
-          botActive ? t('Bot Stopped') : t('Bot Started'),
-          response.data.message,
-          [{text: 'OK'}],
-        );
+        const botMessage = botActive ? t('Bot Stopped') : t('Bot Started');
+        showAlert('Success', botMessage);
         dispatch(toggleBot());
+        if (!botActive) {
+          startBotTask();
+        } else {
+          stopBotTask();
+        }
       } else {
-        Alert.alert(
-          t('Error'),
-          response.data.message || t('An error occurred'),
-          [{text: 'OK'}],
-        );
+        showAlert('Error', response.data.message || t('An error occurred'));
       }
     } catch (error) {
       console.error(
         'Erro ao ligar/desligar o bot:',
         error.response ? error.response.data : error.message,
       );
-      Alert.alert(
-        t('Error'),
+      showAlert(
+        'Error',
         error.response?.data?.message ||
           t('An error occurred while toggling the bot.'),
-        [{text: 'OK'}],
       );
     }
   };
 
   useEffect(() => {
-    navigation.setOptions({
-      headerStyle: {
-        backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF',
-      },
-      headerTintColor: theme === 'dark' ? '#FFFFFF' : '#222B45',
-      headerTitleStyle: {
-        fontWeight: 'bold',
-      },
-      headerRight: () => (
-        <Button
-          onPress={handleToggleBot}
-          status={botActive ? 'danger' : 'success'}
-          style={styles.headerButton}>
-          {botActive ? t('stopBot') : t('startBot')}
-        </Button>
-      ),
-    });
-  }, [navigation, theme, botActive, dispatch, t]);
+    const configureBackgroundFetch = async () => {
+      if (Platform.OS === 'android' || Platform.OS === 'ios') {
+        BackgroundFetch.configure(
+          {
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            startOnBoot: true,
+          },
+          async taskId => {
+            console.log('[BackgroundFetch] Task Start:', taskId);
+            if (botActive) {
+              await runBotTask(filters); // Passando os filtros
+            }
+            BackgroundFetch.finish(taskId);
+          },
+          error => {
+            console.error('[BackgroundFetch] configure failed:', error);
+          },
+        );
 
-  useEffect(() => {
-    let interval;
-    if (botActive) {
-      interval = setInterval(async () => {
-        try {
-          console.log('Dados Just Eat recebidos na HomeScreen:', justEatData);
+        BackgroundFetch.start();
+      } else if (Platform.OS === 'web') {
+        if (botActive) {
+          intervalId.current = setInterval(async () => {
+            console.log('[Web] Running bot task');
+            await runBotTask(filters); // Passando os filtros
+          }, 30000);
+        }
 
-          if (!justEatData.token || !justEatData.id) {
-            console.error('UserToken ou courierId não definido:', {
-              userToken: justEatData.token,
-              courierId: justEatData.id,
-            });
-            return;
+        return () => {
+          if (intervalId.current) {
+            clearInterval(intervalId.current);
           }
+        };
+      }
+    };
 
-          const response = await axios.post(
-            `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/fetchShifts/${justEatData.id}`,
+    configureBackgroundFetch();
+
+    return () => {
+      if (intervalId.current) {
+        clearInterval(intervalId.current);
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [botActive, filters]); // Adicionado filters para que o useEffect reaja a mudanças
+
+  const startBotTask = () => {
+    console.log('[Bot Task] Starting bot task...');
+    if (Platform.OS === 'web') {
+      intervalId.current = setInterval(async () => {
+        console.log('[Web] Running bot task');
+        await runBotTask(filters); // Passando os filtros
+      }, 30000); // 30 segundos
+    }
+  };
+
+  const stopBotTask = () => {
+    console.log('[Bot Task] Stopping bot task...');
+    if (Platform.OS === 'web' && intervalId.current) {
+      clearInterval(intervalId.current);
+    }
+  };
+
+  const runBotTask = async filters => {
+    console.log('[Bot Task] Iniciando a tarefa do bot...');
+    try {
+      console.log(
+        '[Bot Task] Dados Just Eat recebidos na HomeScreen:',
+        justEatData,
+      );
+
+      if (!justEatData.token || !justEatData.id) {
+        console.error('[Bot Task] UserToken ou courierId não definido:', {
+          userToken: justEatData.token,
+          courierId: justEatData.id,
+        });
+        return;
+      }
+
+      console.log('[Bot Task] Buscando turnos disponíveis...');
+      const response = await axios.post(
+        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/fetchShifts/${justEatData.id}`,
+        {
+          userToken: justEatData.token,
+        },
+      );
+
+      const shifts = Array.isArray(response.data.availableShifts)
+        ? response.data.availableShifts
+        : [];
+      console.log('[Bot Task] Turnos disponíveis:', shifts);
+
+      if (shifts.length === 0) {
+        console.log('[Bot Task] Nenhum turno disponível no momento.');
+        return;
+      }
+
+      const filteredShifts = shifts.filter(shift => {
+        const {day, time} = convertMillisecondsToDayAndHour(
+          shift.shiftTime.start,
+        );
+        const filter = filters[day];
+
+        // Verifica se o filtro está ativo. Se não estiver, ignore esse dia.
+        if (!filter || !filter.active) {
+          console.log(
+            `[Bot Task] Filtro para ${day} está desativado. Ignorando.`,
+          );
+          return false;
+        }
+
+        const startHour = timeOptions[filter.start];
+        const endHour = timeOptions[filter.end];
+
+        // Verifica se o turno está dentro do intervalo de tempo selecionado
+        return isTimeInRange(time, startHour, endHour);
+      });
+
+      console.log('[Bot Task] Turnos filtrados:', filteredShifts);
+
+      for (const shift of filteredShifts) {
+        console.log('[Bot Task] Tentando confirmar turno:', shift);
+        try {
+          const confirmResponse = await axios.post(
+            `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/confirmShift/${justEatData.id}/${shift.id}`,
             {
               userToken: justEatData.token,
             },
           );
 
-          const shifts = Array.isArray(response.data.availableShifts)
-            ? response.data.availableShifts
-            : [];
-          console.log('Turnos disponíveis:', shifts);
-
-          if (shifts.length === 0) {
-            console.log('Nenhum turno disponível no momento.');
-            return;
-          }
-
-          const filteredShifts = shifts.filter(shift => {
-            const {day, time} = convertMillisecondsToDayAndHour(
+          if (confirmResponse.status === 200) {
+            const shiftMessage = `Shift starting at ${new Date(
               shift.shiftTime.start,
+            ).toLocaleString()} has been confirmed.`;
+            showAlert('Success', shiftMessage);
+            console.log('[Bot Task] Turno confirmado:', shift);
+          } else {
+            console.error(
+              '[Bot Task] Erro ao confirmar turno:',
+              confirmResponse.data,
             );
-            const filter = filters[day];
-            if (filter && filter.active) {
-              const startHour = timeOptions[filter.start];
-              const endHour = timeOptions[filter.end];
-              return isTimeInRange(time, startHour, endHour);
-            }
-            return false;
-          });
-
-          console.log('Turnos filtrados:', filteredShifts);
-
-          for (const shift of filteredShifts) {
-            try {
-              const confirmResponse = await axios.post(
-                `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/justeat/confirmShift/${justEatData.id}/${shift.id}`,
-                {
-                  userToken: justEatData.token,
-                },
-              );
-
-              if (confirmResponse.status === 200) {
-                console.log('Turno confirmado:', shift);
-                Alert.alert(
-                  'Shift Confirmed',
-                  `Shift starting at ${new Date(
-                    shift.shiftTime.start,
-                  ).toLocaleString()} has been confirmed.`,
-                  [{text: 'OK'}],
-                );
-              } else {
-                console.error('Erro ao confirmar turno:', confirmResponse.data);
-              }
-            } catch (confirmError) {
-              console.error(
-                'Erro ao confirmar turno:',
-                confirmError.response
-                  ? confirmError.response.data
-                  : confirmError.message,
-              );
-            }
           }
-        } catch (error) {
+        } catch (confirmError) {
           console.error(
-            'Erro ao buscar ou confirmar turnos:',
-            error.response ? error.response.data : error.message,
+            '[Bot Task] Erro ao confirmar turno:',
+            confirmError.response
+              ? confirmError.response.data
+              : confirmError.message,
           );
         }
-      }, 30000); // Verificar a cada 30 segundos
+      }
+    } catch (error) {
+      console.error(
+        '[Bot Task] Erro ao buscar ou confirmar turnos:',
+        error.response ? error.response.data : error.message,
+      );
     }
-
-    return () => clearInterval(interval);
-  }, [botActive, filters, justEatData]);
+  };
 
   const generateTimeOptions = () => {
     const times = [];
@@ -232,13 +293,39 @@ const HomeScreen = ({navigation}) => {
       headerRight: () => (
         <Button
           onPress={handleToggleBot}
-          status={botActive ? 'danger' : 'success'}
-          style={styles.headerButton}>
+          style={[
+            styles.headerButton,
+            botActive ? styles.activeBotButton : styles.inactiveBotButton,
+          ]}>
           {botActive ? t('stopBot') : t('startBot')}
         </Button>
       ),
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF',
+      },
+      headerTintColor: theme === 'dark' ? '#FFFFFF' : '#222B45',
     });
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          onPress={handleToggleBot}
+          style={[
+            styles.headerButton,
+            botActive ? styles.activeBotButton : styles.inactiveBotButton,
+          ]}>
+          {botActive ? t('stopBot') : t('startBot')}
+        </Button>
+      ),
+      headerStyle: {
+        backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF',
+      },
+      headerTintColor: theme === 'dark' ? '#FFFFFF' : '#222B45',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation, botActive, theme]);
 
   return (
     <Layout
@@ -378,16 +465,18 @@ const HomeScreen = ({navigation}) => {
             styles.imageContainer,
             theme === 'dark' ? styles.darkContainer : styles.lightContainer,
           ]}>
-          <Image
-            source={require('../img/appstore.png')}
-            style={styles.image}
-            onPress={handleAppStorePress}
-          />
-          <Image
-            source={require('../img/googleplay.png')}
-            style={styles.image}
-            onPress={handleGooglePlayPress}
-          />
+          <TouchableOpacity onPress={handleAppStorePress}>
+            <Image
+              source={require('../img/appstore.png')}
+              style={styles.image}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleGooglePlayPress}>
+            <Image
+              source={require('../img/googleplay.png')}
+              style={styles.image}
+            />
+          </TouchableOpacity>
         </Layout>
         <Text style={styles.footer}>{t('footer')}</Text>
       </ScrollView>
@@ -433,6 +522,14 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     marginRight: 16,
+  },
+  activeBotButton: {
+    backgroundColor: 'red', // Green when bot is active
+    borderColor: 'red',
+  },
+  inactiveBotButton: {
+    backgroundColor: 'green', // Red when bot is inactive
+    borderColor: 'green',
   },
   flagContainer: {
     flexDirection: 'row',

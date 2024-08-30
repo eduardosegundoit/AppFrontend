@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   ApplicationProvider,
   IconRegistry,
   Button,
   Icon,
-  Layout,
 } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import {EvaIconsPack} from '@ui-kitten/eva-icons';
@@ -19,7 +18,8 @@ import {
 } from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Provider, useSelector, useDispatch} from 'react-redux';
-import {Image, View, StyleSheet} from 'react-native';
+import {Image, View, StyleSheet, Platform} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import store from './redux/store.js';
 import LoginScreen from './screens/LoginScreen.js';
 import RegisterScreen from './screens/RegisterScreen.js';
@@ -35,6 +35,17 @@ import LogoutScreen from './screens/LogoutScreen.js';
 import customMapping from '../custom-mapping.json';
 import {useTranslation} from 'react-i18next';
 import './i18n.js';
+import ErrorBoundary from './ErrorBoundary';
+
+let toast;
+let ToastContainer;
+
+if (Platform.OS === 'web') {
+  const reactToastify = require('react-toastify');
+  toast = reactToastify.toast;
+  ToastContainer = reactToastify.ToastContainer;
+  require('react-toastify/dist/ReactToastify.css');
+}
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -222,14 +233,16 @@ const App = () => {
     <>
       <IconRegistry icons={EvaIconsPack} />
       <Provider store={store}>
-        <ApplicationProvider
-          {...eva}
-          theme={eva.dark}
-          customMapping={customMapping}>
-          <NavigationContainer>
-            <AppNavigator />
-          </NavigationContainer>
-        </ApplicationProvider>
+        <ErrorBoundary>
+          <ApplicationProvider
+            {...eva}
+            theme={eva.dark}
+            customMapping={customMapping}>
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </ApplicationProvider>
+        </ErrorBoundary>
       </Provider>
     </>
   );

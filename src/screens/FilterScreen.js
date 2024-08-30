@@ -1,11 +1,11 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/prop-types */
+// FilterScreen.js
+
 import React, {useEffect, useState, useRef} from 'react';
 import {
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   View,
   Animated,
@@ -16,6 +16,7 @@ import {Layout, Text, Button, Card, Toggle, Icon} from '@ui-kitten/components';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import {setFilters} from '../redux/actions';
 import {useTranslation} from 'react-i18next';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const daysOfWeek = [
   'Monday',
@@ -63,6 +64,25 @@ const FilterScreen = ({navigation}) => {
     ),
   );
 
+  useEffect(() => {
+    const loadFilters = async () => {
+      try {
+        const savedFilters = await AsyncStorage.getItem('filters');
+        if (savedFilters) {
+          setSelectedFilters(JSON.parse(savedFilters));
+          console.log(
+            'Loaded filters from AsyncStorage:',
+            JSON.parse(savedFilters),
+          );
+        }
+      } catch (error) {
+        console.error('Failed to load filters:', error);
+      }
+    };
+
+    loadFilters();
+  }, []);
+
   const handleDayChange = (day, values) => {
     setSelectedFilters(prevFilters => ({
       ...prevFilters,
@@ -100,11 +120,19 @@ const FilterScreen = ({navigation}) => {
     });
   };
 
-  const applyFilters = () => {
-    dispatch(setFilters(selectedFilters));
-    Alert.alert(t('filtersApplied'), t('filtersAppliedMessage'), [
-      {text: 'OK'},
-    ]);
+  const applyFilters = async () => {
+    console.log('Applying filters:', selectedFilters);
+    dispatch(setFilters(selectedFilters)); // Dispatch filters to Redux
+
+    try {
+      await AsyncStorage.setItem('filters', JSON.stringify(selectedFilters));
+      console.log('Filters saved to AsyncStorage:', selectedFilters);
+      Alert.alert(t('filtersApplied'), t('filtersAppliedMessage'), [
+        {text: 'OK'},
+      ]);
+    } catch (error) {
+      console.error('Failed to save filters:', error);
+    }
   };
 
   useEffect(() => {
@@ -131,7 +159,6 @@ const FilterScreen = ({navigation}) => {
       <Text category="h1" style={[styles.header, {color: textColor}]}>
         {t('filtersTitle')}
       </Text>
-
       <View style={styles.rowContainer}>
         <Button onPress={applyFilters} style={styles.button}>
           {t('applyFilters')}
@@ -146,14 +173,13 @@ const FilterScreen = ({navigation}) => {
               ? 'success'
               : 'danger'
           }>
-          {Object.values(selectedFilters).some(filter => filter.active) ? (
-            <Text style={{color: 'orange'}}>{t('deactivateAll')}</Text>
-          ) : (
-            <Text style={{color: 'orange'}}>{t('activateAll')}</Text>
-          )}
+          <Text style={{color: 'orange'}}>
+            {Object.values(selectedFilters).some(filter => filter.active)
+              ? t('deactivateAll')
+              : t('activateAll')}
+          </Text>
         </Toggle>
       </View>
-
       <Card
         style={[
           styles.infoCard,
@@ -164,7 +190,6 @@ const FilterScreen = ({navigation}) => {
           {t('infoApplyFilters')}
         </Text>
       </Card>
-
       <Animated.ScrollView
         ref={scrollViewRef}
         onScroll={Animated.event(
@@ -224,7 +249,6 @@ const FilterScreen = ({navigation}) => {
           </Card>
         ))}
       </Animated.ScrollView>
-
       {showScrollToTop && (
         <TouchableOpacity
           style={styles.scrollToTopButton}

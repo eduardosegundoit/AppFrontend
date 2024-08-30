@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, {useEffect} from 'react';
-import {StyleSheet, Linking} from 'react-native';
+import {StyleSheet, Linking, Platform, Alert} from 'react-native';
 import {Layout, Text, Card, Button} from '@ui-kitten/components';
 import {useSelector, useDispatch} from 'react-redux';
-import {useTranslation} from 'react-i18next'; // Import the hook for translations
+import {useTranslation} from 'react-i18next';
 import {createCheckoutSession} from '../redux/actions';
 
 const PaymentScreen = ({navigation}) => {
-  const {t} = useTranslation(); // Initialize the translation hook
+  const {t} = useTranslation();
   const theme = useSelector(state => state.theme);
   const isDarkTheme = theme === 'dark';
   const backgroundColor = isDarkTheme ? '#222B45' : '#f7f9fc';
@@ -32,12 +32,22 @@ const PaymentScreen = ({navigation}) => {
     try {
       const paymentUrl = await dispatch(createCheckoutSession(priceId));
       if (paymentUrl) {
-        Linking.openURL(paymentUrl).catch(err =>
-          console.error("Couldn't load page", err),
-        );
+        if (Platform.OS === 'web') {
+          window.open(paymentUrl, '_blank');
+        } else {
+          const supported = await Linking.canOpenURL(paymentUrl);
+          if (supported) {
+            Linking.openURL(paymentUrl).catch(err =>
+              console.error("Couldn't load page", err),
+            );
+          } else {
+            Alert.alert(t('error'), t('cannotOpenLink'), [{text: 'OK'}]);
+          }
+        }
       }
     } catch (error) {
       console.error('Error during payment process:', error);
+      Alert.alert(t('error'), t('paymentError'), [{text: 'OK'}]);
     }
   };
 

@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const TOGGLE_BOT = 'TOGGLE_BOT';
 export const SET_FILTERS = 'SET_FILTERS';
@@ -11,22 +12,47 @@ export const LOGOUT = 'LOGOUT';
 export const UPDATE_USER_EMAIL = 'UPDATE_USER_EMAIL';
 export const UPDATE_USER_PASSWORD = 'UPDATE_USER_PASSWORD';
 
+
+
+
 export const toggleBot = () => ({
   type: TOGGLE_BOT,
-});
-
-export const logout = () => ({
-  type: LOGOUT,
 });
 
 export const toggleTheme = () => ({
   type: TOGGLE_THEME,
 });
 
-export const setFilters = filters => ({
-  type: SET_FILTERS,
-  payload: filters,
-});
+export const setFilters = filters => {
+  return async dispatch => {
+    try {
+      await AsyncStorage.setItem('filters', JSON.stringify(filters));
+      dispatch({
+        type: SET_FILTERS,
+        payload: filters,
+      });
+    } catch (error) {
+      console.error('Error saving filters:', error);
+    }
+  };
+};
+
+export const loadFilters = () => {
+  return async dispatch => {
+    try {
+      const filters = await AsyncStorage.getItem('filters');
+      if (filters) {
+        dispatch({
+          type: SET_FILTERS,
+          payload: JSON.parse(filters),
+        });
+      }
+    } catch (error) {
+      console.error('Error loading filters:', error);
+    }
+  };
+};
+
 
 export const setJustEatData = data => ({
   type: SET_JUST_EAT_DATA,
@@ -64,6 +90,9 @@ export const loginUser = (email, password) => {
           justEatEmail: response.data.justEatEmail,
           justEatPassword: response.data.justEatPassword,
         };
+
+        await AsyncStorage.setItem('token', response.data.token); // Salva o token
+
         dispatch(setUser(userData));
         dispatch(checkSubscriptionStatus());
 
@@ -221,3 +250,16 @@ export const updateUserPasswordAsync = password => async (dispatch, getState) =>
     console.error('Error updating password:', error.message);
   }
 };
+
+export const logout = () => {
+  return async dispatch => {
+    try {
+      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('filters');  // Remove os filtros ao deslogar
+      dispatch({ type: LOGOUT });
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+};
+

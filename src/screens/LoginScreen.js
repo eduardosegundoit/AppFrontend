@@ -1,5 +1,8 @@
-import React from 'react';
-import {StyleSheet, View} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/prop-types */
+import React, {useEffect} from 'react';
+// eslint-disable-next-line no-unused-vars
+import {StyleSheet, View, Platform} from 'react-native';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -7,10 +10,24 @@ import * as Animatable from 'react-native-animatable';
 import {Layout, Input, Button, Text} from '@ui-kitten/components';
 import {setUser} from '../redux/actions';
 import {useDispatch, useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const theme = useSelector(state => state.theme);
+
+  useEffect(() => {
+    // Função para verificar o token ao carregar a tela
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        // Se o token existe, redirecionar o usuário
+        navigation.navigate('JustEat', {token});
+      }
+    };
+
+    checkToken();
+  }, [navigation]);
 
   return (
     <Formik
@@ -31,6 +48,10 @@ const LoginScreen = ({navigation}) => {
             subscriptionStatus: response.data.subscriptionStatus,
             trialEnd: response.data.trialEnd,
           };
+
+          // Salva o token no AsyncStorage
+          await AsyncStorage.setItem('token', response.data.token);
+
           dispatch(setUser(userData));
           navigation.navigate('JustEat', {token: response.data.token});
         } catch (error) {
