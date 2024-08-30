@@ -1,9 +1,11 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable no-shadow */
-/* eslint-disable react/prop-types */
+/* eslint-disable prettier/prettier */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/prop-types */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   StyleSheet,
   Alert,
@@ -14,24 +16,22 @@ import {
   Platform,
   View,
 } from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import {Layout, Text, Button, Toggle, Card} from '@ui-kitten/components';
-import {useTranslation} from 'react-i18next';
+import { Layout, Text, Button, Toggle, Card } from '@ui-kitten/components';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import {toggleBot} from '../redux/actions';
+import { toggleBot } from '../redux/actions';
 import '../i18n';
 import BackgroundFetch from 'react-native-background-fetch';
 
-const HomeScreen = ({navigation}) => {
-  const {t, i18n} = useTranslation();
+const HomeScreen = ({ navigation }) => {
+  const { t, i18n } = useTranslation();
   const theme = useSelector(state => state.theme);
   const user = useSelector(state => state.user);
   const justEatData = useSelector(state => state.justEatData);
   const filters = useSelector(state => state.filters);
-  const subscriptionStatus = useSelector(
-    state => state.user.subscriptionStatus,
-  );
+  const subscriptionStatus = useSelector(state => state.user.subscriptionStatus);
   const trialEnd = useSelector(state => state.user.trialEnd);
   const botActive = useSelector(state => state.botEnabled);
   const dispatch = useDispatch();
@@ -39,18 +39,14 @@ const HomeScreen = ({navigation}) => {
   const intervalId = useRef(null);
 
   const showAlert = (title, message) => {
-    console.log(
-      `showAlert called with title: ${title} and message: ${message}`,
-    );
-    Alert.alert(title, message, [{text: 'OK'}]);
+    console.log(`showAlert called with title: ${title} and message: ${message}`);
+    Alert.alert(title, message, [{ text: 'OK' }]);
   };
 
   const handleToggleBot = async () => {
     try {
       const response = await axios.post(
-        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/bot/${
-          botActive ? 'stop' : 'start'
-        }`,
+        `https://lightinggrabber-2ebb31cb9e79.herokuapp.com/bot/${botActive ? 'stop' : 'start'}`,
         {
           userId: user._id,
         },
@@ -76,7 +72,7 @@ const HomeScreen = ({navigation}) => {
       showAlert(
         'Error',
         error.response?.data?.message ||
-          t('An error occurred while toggling the bot.'),
+        t('An error occurred while toggling the bot.')
       );
     }
   };
@@ -86,36 +82,31 @@ const HomeScreen = ({navigation}) => {
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
         BackgroundFetch.configure(
           {
-            minimumFetchInterval: 15,
-            stopOnTerminate: false,
-            startOnBoot: true,
+            minimumFetchInterval: 15, // Minimum interval for background tasks
+            stopOnTerminate: false, // Continue on termination
+            startOnBoot: true, // Start on device boot
           },
           async taskId => {
             console.log('[BackgroundFetch] Task Start:', taskId);
             if (botActive) {
-              await runBotTask(filters); // Passando os filtros
+              await runBotTask(filters); // Pass filters
             }
             BackgroundFetch.finish(taskId);
           },
           error => {
             console.error('[BackgroundFetch] configure failed:', error);
-          },
+          }
         );
 
+        // Start background fetch
         BackgroundFetch.start();
       } else if (Platform.OS === 'web') {
         if (botActive) {
           intervalId.current = setInterval(async () => {
             console.log('[Web] Running bot task');
-            await runBotTask(filters); // Passando os filtros
-          }, 30000);
+            await runBotTask(filters); // Pass filters
+          }, 30000); // 30 seconds interval
         }
-
-        return () => {
-          if (intervalId.current) {
-            clearInterval(intervalId.current);
-          }
-        };
       }
     };
 
@@ -126,16 +117,15 @@ const HomeScreen = ({navigation}) => {
         clearInterval(intervalId.current);
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [botActive, filters]); // Adicionado filters para que o useEffect reaja a mudanças
+  }, [botActive, filters]);
 
   const startBotTask = () => {
     console.log('[Bot Task] Starting bot task...');
     if (Platform.OS === 'web') {
       intervalId.current = setInterval(async () => {
         console.log('[Web] Running bot task');
-        await runBotTask(filters); // Passando os filtros
-      }, 30000); // 30 segundos
+        await runBotTask(filters); // Pass filters
+      }, 30000); // 30 seconds interval
     }
   };
 
@@ -149,10 +139,7 @@ const HomeScreen = ({navigation}) => {
   const runBotTask = async filters => {
     console.log('[Bot Task] Iniciando a tarefa do bot...');
     try {
-      console.log(
-        '[Bot Task] Dados Just Eat recebidos na HomeScreen:',
-        justEatData,
-      );
+      console.log('[Bot Task] Dados Just Eat recebidos na HomeScreen:', justEatData);
 
       if (!justEatData.token || !justEatData.id) {
         console.error('[Bot Task] UserToken ou courierId não definido:', {
@@ -181,23 +168,21 @@ const HomeScreen = ({navigation}) => {
       }
 
       const filteredShifts = shifts.filter(shift => {
-        const {day, time} = convertMillisecondsToDayAndHour(
+        const { day, time } = convertMillisecondsToDayAndHour(
           shift.shiftTime.start,
         );
         const filter = filters[day];
 
-        // Verifica se o filtro está ativo. Se não estiver, ignore esse dia.
+        // Check if filter is active. If not, ignore this day.
         if (!filter || !filter.active) {
-          console.log(
-            `[Bot Task] Filtro para ${day} está desativado. Ignorando.`,
-          );
+          console.log(`[Bot Task] Filtro para ${day} está desativado. Ignorando.`);
           return false;
         }
 
         const startHour = timeOptions[filter.start];
         const endHour = timeOptions[filter.end];
 
-        // Verifica se o turno está dentro do intervalo de tempo selecionado
+        // Check if the shift is within the selected time range
         return isTimeInRange(time, startHour, endHour);
       });
 
@@ -220,10 +205,7 @@ const HomeScreen = ({navigation}) => {
             showAlert('Success', shiftMessage);
             console.log('[Bot Task] Turno confirmado:', shift);
           } else {
-            console.error(
-              '[Bot Task] Erro ao confirmar turno:',
-              confirmResponse.data,
-            );
+            console.error('[Bot Task] Erro ao confirmar turno:', confirmResponse.data);
           }
         } catch (confirmError) {
           console.error(
@@ -258,10 +240,10 @@ const HomeScreen = ({navigation}) => {
 
   const convertMillisecondsToDayAndHour = milliseconds => {
     const date = new Date(milliseconds);
-    const day = date.toLocaleString('en-GB', {weekday: 'long'});
+    const day = date.toLocaleString('en-GB', { weekday: 'long' });
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return {day, time: `${hours}:${minutes}`};
+    return { day, time: `${hours}:${minutes}` };
   };
 
   const isTimeInRange = (time, start, end) => {
@@ -293,17 +275,14 @@ const HomeScreen = ({navigation}) => {
       headerRight: () => (
         <Button
           onPress={handleToggleBot}
-          style={[
-            styles.headerButton,
-            botActive ? styles.activeBotButton : styles.inactiveBotButton,
-          ]}>
+          status={botActive ? 'danger' : 'success'}
+          style={styles.headerButton}>
           {botActive ? t('stopBot') : t('startBot')}
         </Button>
       ),
       headerStyle: {
-        backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF',
+        backgroundColor: theme === 'dark' ? '#333B50' : '#F7F9FC',
       },
-      headerTintColor: theme === 'dark' ? '#FFFFFF' : '#222B45',
     });
   };
 
@@ -312,19 +291,15 @@ const HomeScreen = ({navigation}) => {
       headerRight: () => (
         <Button
           onPress={handleToggleBot}
-          style={[
-            styles.headerButton,
-            botActive ? styles.activeBotButton : styles.inactiveBotButton,
-          ]}>
+          status={botActive ? 'danger' : 'success'}
+          style={styles.headerButton}>
           {botActive ? t('stopBot') : t('startBot')}
         </Button>
       ),
       headerStyle: {
-        backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF',
+        backgroundColor: theme === 'dark' ? '#333B50' : '#F7F9FC',
       },
-      headerTintColor: theme === 'dark' ? '#FFFFFF' : '#222B45',
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation, botActive, theme]);
 
   return (
@@ -346,7 +321,7 @@ const HomeScreen = ({navigation}) => {
             styles.trialText,
             theme === 'dark' ? styles.darkText : styles.lightText,
           ]}>
-          {t('trialInfo', {trialEnd: moment(trialEnd).format('LL')})}
+          {t('trialInfo', { trialEnd: moment(trialEnd).format('LL') })}
         </Text>
         <Layout
           style={[
@@ -358,7 +333,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/uk2.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -367,7 +342,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/br.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -376,7 +351,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/es2.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -385,7 +360,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/italian2.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -394,7 +369,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/in2.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -403,7 +378,7 @@ const HomeScreen = ({navigation}) => {
               source={require('../img/arab.png')}
               style={[
                 styles.flag,
-                {backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF'},
+                { backgroundColor: theme === 'dark' ? '#222B45' : '#FFFFFF' },
               ]}
             />
           </TouchableOpacity>
@@ -418,7 +393,7 @@ const HomeScreen = ({navigation}) => {
             style={theme === 'dark' ? styles.darkText : styles.lightText}>
             {t('instructions')}
           </Text>
-          {t('steps', {returnObjects: true}).map((step, index) => (
+          {t('steps', { returnObjects: true }).map((step, index) => (
             <Text
               key={index}
               style={[
@@ -439,7 +414,7 @@ const HomeScreen = ({navigation}) => {
             onChange={setBoosterActive}
             style={styles.toggle}
             status={boosterActive ? 'success' : 'basic'}>
-            <Text style={{color: 'orange'}}>
+            <Text style={{ color: 'orange' }}>
               {boosterActive
                 ? 'Disable Booster Orders'
                 : 'Enable Booster Orders'}
@@ -522,14 +497,6 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     marginRight: 16,
-  },
-  activeBotButton: {
-    backgroundColor: 'red', // Green when bot is active
-    borderColor: 'red',
-  },
-  inactiveBotButton: {
-    backgroundColor: 'green', // Red when bot is inactive
-    borderColor: 'green',
   },
   flagContainer: {
     flexDirection: 'row',
